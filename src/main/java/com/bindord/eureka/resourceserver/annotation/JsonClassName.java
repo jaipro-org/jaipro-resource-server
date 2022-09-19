@@ -13,4 +13,6 @@ import java.lang.annotation.Target;
 public @interface JsonClassName {
 
     Class<?> name() default Void.class;
+
+    String type() default "";
 }

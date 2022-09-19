@@ -1,8 +1,8 @@
-package com.bindord.eureka.resourceserver.domain.customer;
+package com.bindord.eureka.resourceserver.domain.specialist;
 
 import com.bindord.eureka.resourceserver.annotation.JsonClassName;
 import com.bindord.eureka.resourceserver.domain.base.BaseDomain;
-import com.bindord.eureka.resourceserver.domain.json.Photo;
+import com.bindord.eureka.resourceserver.domain.json.Rating;
 import com.bindord.eureka.resourceserver.validation.ExtendedEmailValidator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.r2dbc.postgresql.codec.Json;
@@ -17,17 +17,16 @@ import org.springframework.data.relational.core.mapping.Table;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 import java.util.UUID;
 
 @Setter
 @Getter
 @Table
-public class Customer extends BaseDomain implements Persistable<UUID> {
+public class Specialist extends BaseDomain implements Persistable<UUID> {
 
     @Id
-    @Column(value = "customer_id")
+    @Column(value = "specialist_id")
     private UUID id;
 
     @NotBlank
@@ -49,6 +48,7 @@ public class Customer extends BaseDomain implements Persistable<UUID> {
     @Column
     private Integer gender;
 
+    @NotBlank
     @Size(min = 2, max = Byte.MAX_VALUE)
     @Column
     private String address;
@@ -59,7 +59,7 @@ public class Customer extends BaseDomain implements Persistable<UUID> {
     @Column
     private String email;
 
-    @Null
+    @NotBlank
     @Size(min = 8, max = 12)
     @Column
     private String document;
@@ -69,17 +69,17 @@ public class Customer extends BaseDomain implements Persistable<UUID> {
     @Column
     private String phone;
 
-    @JsonClassName(name = Photo.class)
-    @Column
-    private Json profilePhoto;
-
     @NotBlank
     @Size(min = 7, max = Byte.MAX_VALUE)
     @Column
     private String publicUrl;
 
     @Column
-    private boolean verifiedEmail;
+    private boolean verified;
+
+    @JsonClassName(name = Rating.class, type = "List")
+    @Column
+    private Json ratings;
 
     @Column
     private Integer districtId;

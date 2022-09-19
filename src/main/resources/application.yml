@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: debug
+    active: dev
   # R2DBC Driver config
   r2dbc:
     url: ${PG_URL}

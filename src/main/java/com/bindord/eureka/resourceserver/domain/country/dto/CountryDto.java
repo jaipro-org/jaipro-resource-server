@@ -15,7 +15,7 @@ public class CountryDto {
     @Schema(description = "Codes from ISO 3166-1, Alpha-3 code")
     private String id;
 
-    @Size(min = 2, max = 50)
+    @Size(min = 2, max = 60)
     private String name;
 
     @Schema(description = "Numeric code from ISO 3166-1")

@@ -25,7 +25,7 @@ public class Country extends BaseDomain implements Persistable<String> {
     @Column(value = "country_id")
     private String id;
 
-    @Size(min = 2, max = 50)
+    @Size(min = 2, max = 60)
     private String name;
 
     @Schema(description = "Numeric code from ISO 3166-1")

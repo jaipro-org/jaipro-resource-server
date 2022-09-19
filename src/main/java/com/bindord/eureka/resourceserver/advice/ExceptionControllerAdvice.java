@@ -23,8 +23,12 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.bindord.eureka.resourceserver.configuration.JacksonFactory.getObjectMapper;
+
 @RestControllerAdvice
 public class ExceptionControllerAdvice {
+
+    private static final ObjectMapper mapper = getObjectMapper();
 
     private static final String SQL_UNIQUE_VIOLATION_CODE = "23505";
     private static final String SQL_DUP_EXCEP_PREFIX = "duplicate key value violates unique constraint";
@@ -74,7 +78,7 @@ public class ExceptionControllerAdvice {
         for (int i = 0; i < lenStackTrace; i++) {
             LOGGER.warn(ex.getStackTrace()[i].toString());
         }
-        return new ObjectMapper().readValue(ex.getResponseBodyAsString(), ErrorResponse.class);
+        return mapper.readValue(ex.getResponseBodyAsString(), ErrorResponse.class);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

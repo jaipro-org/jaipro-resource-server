@@ -2,16 +2,14 @@ package com.bindord.eureka.resourceserver.controller;
 
 import com.bindord.eureka.resourceserver.advice.CustomValidationException;
 import com.bindord.eureka.resourceserver.advice.NotFoundValidationException;
-import com.bindord.eureka.resourceserver.domain.customer.Customer;
-import com.bindord.eureka.resourceserver.domain.customer.dto.CustomerDto;
-import com.bindord.eureka.resourceserver.domain.customer.dto.CustomerUpdateDto;
-import com.bindord.eureka.resourceserver.service.customer.CustomerService;
+import com.bindord.eureka.resourceserver.domain.specialist.WorkLocation;
+import com.bindord.eureka.resourceserver.domain.specialist.dto.WorkLocationDto;
+import com.bindord.eureka.resourceserver.service.specialist.WorkLocationService;
 import com.bindord.eureka.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,53 +21,62 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
 @Slf4j
 @RestController
-@RequestMapping("${service.ingress.context-path}/customer")
-public class CustomerController {
+@RequestMapping("${service.ingress.context-path}/work-location")
+public class WorkLocationController {
 
     private final Validator validator;
 
-    private final CustomerService customerService;
+    private final WorkLocationService workLocationService;
 
-    @ApiResponse(description = "Persist a customer",
+    @ApiResponse(description = "Persist a workLocation",
             responseCode = "200")
     @PostMapping(value = "",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<Customer> save(@Valid @RequestBody CustomerDto customer)
+    public Mono<WorkLocation> save(@Valid @RequestBody WorkLocationDto workLocation)
             throws NotFoundValidationException, CustomValidationException {
-        return customerService.save(customer);
+        return workLocationService.save(workLocation);
     }
 
-    @ApiResponse(description = "Update a customer",
+    @ApiResponse(description = "Persist many workLocations",
+            responseCode = "200")
+    @PostMapping(value = "/list",
+            produces = {MediaType.APPLICATION_JSON_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public Flux<WorkLocation> saveAll(@Valid @RequestBody List<WorkLocation> workLocation) {
+        return workLocationService.saveAll(workLocation);
+    }
+
+    @ApiResponse(description = "Update a workLocation",
             responseCode = "200")
     @PutMapping(value = "",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<Customer> update(@Valid @RequestBody CustomerUpdateDto customer)
+    public Mono<WorkLocation> update(@Valid @RequestBody WorkLocationDto workLocation)
             throws NotFoundValidationException, CustomValidationException {
-        return customerService.update(customer);
+        return workLocationService.update(workLocation);
     }
 
-    @ApiResponse(description = "List customers",
+    @ApiResponse(description = "List workLocations",
             responseCode = "200")
     @GetMapping(value = "",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Flux<Customer> findAll() {
-        return customerService.findAll();
+    public Flux<WorkLocation> findAll() {
+        return workLocationService.findAll();
     }
 
-    @PreAuthorize("hasRole('UMA_AUTHORIZATION')")
-    @ApiResponse(description = "Find by id",
+    @ApiResponse(description = "FindAll by SpecialistId",
             responseCode = "200")
     @GetMapping(value = "/{id}",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<Customer> findById(@PathVariable UUID id) throws NotFoundValidationException {
-        return customerService.findOne(id);
+    public Flux<WorkLocation> findAllBySpecialistId(@PathVariable UUID id) throws NotFoundValidationException {
+        return workLocationService.findAllBySpecialistId(id);
     }
 
 }
