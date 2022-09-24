@@ -27,7 +27,7 @@ public class Rating implements Serializable {
     private String comment;
 
     @NotBlank
-    @Size(min = 72)
+    @Size(min = 9, max = 72)
     private String clientName;
 
     @NotNull
