@@ -2,6 +2,7 @@ package com.bindord.eureka.resourceserver.utils;
 
 import com.bindord.eureka.resourceserver.configuration.JacksonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,6 +53,10 @@ public class Utilitarios {
             e.printStackTrace();
             return StringUtils.EMPTY;
         }
+    }
+
+    public static ObjectMapper instanceObjectMapper() {
+        return JacksonFactory.getObjectMapper();
     }
 
     public static String[] getNullPropertyNames(Object source) {

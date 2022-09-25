@@ -20,6 +20,7 @@ import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
+import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -122,6 +123,13 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(BadSqlGrammarException.class)
     public @ResponseBody
     Mono<ApiError> handlerDataIntegrityViolationException(BadSqlGrammarException ex) {
+        return Mono.just(new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage(), ex));
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ConstraintViolationException.class)
+    public Mono<ApiError> handleBindException(ConstraintViolationException ex) {
+        LOGGER.warn(ex.getMessage());
         return Mono.just(new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage(), ex));
     }
 }

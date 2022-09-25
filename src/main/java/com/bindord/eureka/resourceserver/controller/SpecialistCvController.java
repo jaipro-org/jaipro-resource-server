@@ -2,15 +2,16 @@ package com.bindord.eureka.resourceserver.controller;
 
 import com.bindord.eureka.resourceserver.advice.CustomValidationException;
 import com.bindord.eureka.resourceserver.advice.NotFoundValidationException;
-import com.bindord.eureka.resourceserver.domain.specialist.WorkLocation;
-import com.bindord.eureka.resourceserver.domain.specialist.dto.WorkLocationDto;
-import com.bindord.eureka.resourceserver.service.specialist.WorkLocationService;
+import com.bindord.eureka.resourceserver.domain.specialist.SpecialistCv;
+import com.bindord.eureka.resourceserver.domain.specialist.dto.SpecialistCvDto;
+import com.bindord.eureka.resourceserver.domain.specialist.dto.SpecialistCvUpdateDto;
+import com.bindord.eureka.resourceserver.service.specialist.SpecialistCvService;
 import com.bindord.eureka.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,63 +23,53 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
-import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
 @Slf4j
 @RestController
-@RequestMapping("${service.ingress.context-path}/work-location")
-@Validated
-public class WorkLocationController {
+@RequestMapping("${service.ingress.context-path}/specialist-cv")
+public class SpecialistCvController {
 
     private final Validator validator;
 
-    private final WorkLocationService workLocationService;
+    private final SpecialistCvService specialistCvService;
 
-    @ApiResponse(description = "Persist a workLocation",
+    @ApiResponse(description = "Persist a specialist cv",
             responseCode = "200")
     @PostMapping(value = "",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<WorkLocation> save(@Valid @RequestBody WorkLocationDto workLocation)
+    public Mono<SpecialistCv> save(@Valid @RequestBody SpecialistCvDto specialist)
             throws NotFoundValidationException, CustomValidationException {
-        return workLocationService.save(workLocation);
+        return specialistCvService.save(specialist);
     }
 
-    @ApiResponse(description = "Persist many workLocations",
-            responseCode = "200")
-    @PostMapping(value = "/list",
-            produces = {MediaType.APPLICATION_JSON_VALUE},
-            consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Flux<WorkLocation> saveAll(@RequestBody List<@Valid WorkLocation> workLocation) {
-        return workLocationService.saveAll(workLocation);
-    }
-
-    @ApiResponse(description = "Update a workLocation",
+    @ApiResponse(description = "Update a specialist cv",
             responseCode = "200")
     @PutMapping(value = "",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<WorkLocation> update(@Valid @RequestBody WorkLocationDto workLocation)
+    public Mono<SpecialistCv> update(@Valid @RequestBody SpecialistCvUpdateDto specialist)
             throws NotFoundValidationException, CustomValidationException {
-        return workLocationService.update(workLocation);
+        return specialistCvService.update(specialist);
     }
 
-    @ApiResponse(description = "List workLocations",
+    @ApiResponse(description = "List specialist's cvs",
             responseCode = "200")
     @GetMapping(value = "",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Flux<WorkLocation> findAll() {
-        return workLocationService.findAll();
+    public Flux<SpecialistCv> findAll() {
+        return specialistCvService.findAll();
     }
 
-    @ApiResponse(description = "FindAll by SpecialistId",
+    @PreAuthorize("hasRole('UMA_AUTHORIZATION')")
+    @ApiResponse(description = "Find by id",
             responseCode = "200")
     @GetMapping(value = "/{id}",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Flux<WorkLocation> findAllBySpecialistId(@PathVariable UUID id) throws NotFoundValidationException {
-        return workLocationService.findAllBySpecialistId(id);
+    public Mono<SpecialistCv> findById(@PathVariable UUID id) throws NotFoundValidationException {
+        return specialistCvService.findOne(id);
     }
 
 }

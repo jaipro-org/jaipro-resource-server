@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +29,7 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("${service.ingress.context-path}/specialist-specialization")
+@Validated
 public class SpecialistSpecializationController {
 
     private final Validator validator;
@@ -49,7 +51,7 @@ public class SpecialistSpecializationController {
     @PostMapping(value = "/list",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Flux<SpecialistSpecialization> saveAll(@Valid @RequestBody List<SpecialistSpecialization> specialistSpecializations) {
+    public Flux<SpecialistSpecialization> saveAll(@RequestBody List<@Valid SpecialistSpecialization> specialistSpecializations) {
         return specialistSpecializationService.saveAll(specialistSpecializations);
     }
 

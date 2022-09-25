@@ -7,7 +7,6 @@ import com.bindord.eureka.resourceserver.domain.specialist.dto.SpecialistDto;
 import com.bindord.eureka.resourceserver.domain.specialist.dto.SpecialistUpdateDto;
 import com.bindord.eureka.resourceserver.repository.SpecialistRepository;
 import com.bindord.eureka.resourceserver.service.specialist.SpecialistService;
-import io.r2dbc.postgresql.codec.Json;
 import io.r2dbc.spi.Connection;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -17,7 +16,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
-import static com.bindord.eureka.resourceserver.utils.Utilitarios.convertJSONtoString;
 import static com.bindord.eureka.resourceserver.utils.Utilitarios.getNullPropertyNames;
 
 @AllArgsConstructor
@@ -40,6 +38,11 @@ public class SpecialistServiceImpl implements SpecialistService {
     @Override
     public Mono<Specialist> findOne(UUID id) throws NotFoundValidationException {
         return repository.findById(id);
+    }
+
+    @Override
+    public Mono<Boolean> existsSpecialistByDocument(String document) {
+        return repository.existsSpecialistByDocument(document);
     }
 
     private <T> Mono<T> close(Connection connection) {
@@ -70,22 +73,12 @@ public class SpecialistServiceImpl implements SpecialistService {
 
     private Specialist convertToEntity(SpecialistUpdateDto obj, Specialist specialist) {
         BeanUtils.copyProperties(obj, specialist, getNullPropertyNames(obj));
-        specialist.setRatings(
-                Json.of(
-                        convertJSONtoString(obj.getRatings())
-                )
-        );
         return specialist;
     }
 
     private Specialist convertToEntityForNewCase(SpecialistDto obj) {
         var specialist = new Specialist();
         BeanUtils.copyProperties(obj, specialist);
-        specialist.setRatings(
-                Json.of(
-                        convertJSONtoString(obj.getRatings())
-                )
-        );
         specialist.setNew(true);
         return specialist;
     }

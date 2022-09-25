@@ -58,9 +58,6 @@ public class SpecialistDto {
 
     private boolean verified;
 
-    @Valid
-    private List<Rating> ratings;
-
     @Schema(example = "1")
     private Integer districtId;
 
