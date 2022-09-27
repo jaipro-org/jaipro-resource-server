@@ -37,11 +37,11 @@
         </RollingFile>
     </Appenders>
     <Loggers>
-        <Logger name="com.bindord.eureka.resourceserver.aop" level="info" additivity="false">
+        <Logger name="com.bindord.eureka.resourceserver.aop" level="debug" additivity="false">
             <AppenderRef ref="AppFileAppender"/>
             <AppenderRef ref="ConsoleAppender"/>
         </Logger>
-        <Logger name="com.bindord.eureka.resourceserver.configuration" level="info" additivity="false">
+        <Logger name="com.bindord.eureka.resourceserver.configuration" level="debug" additivity="false">
             <!--<AppenderRef ref="AppFileAppender"/>-->
             <AppenderRef ref="ConsoleAppender"/>
         </Logger>
