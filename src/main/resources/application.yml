@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev
+    active: gcp-dev
   # R2DBC Driver config
   r2dbc:
     url: ${PG_URL}

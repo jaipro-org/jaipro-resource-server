@@ -146,6 +146,19 @@
                     </excludes>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <to>
+                        <image>gcr.io/speedy-rite-365303/${project.name}</image>
+                    </to>
+                    <container>
+                        <mainClass>${project.groupId}.${project.artifactId}.EurekaResourceServerApplication</mainClass>
+                    </container>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

@@ -1,0 +1,9 @@
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://35.202.209.155:30010/auth/realms/eureka
+
+logging:
+  config: classpath:log4j2-dev-spring.xml
