@@ -4,8 +4,8 @@ spring:
   # R2DBC Driver config
   r2dbc:
     url: ${PG_URL}
-    username: ${PG_USER}
-    password: ${PG_PWD}
+    username: ${sm://projects/921811317837/secrets/SQL_JAIPRO_DEV_APP_USER}
+    password: ${sm://projects/921811317837/secrets/SQL_JAIPRO_DEV_APP_PWD}
     pool:
       initial-size: 10
       max-idle-time: 30m

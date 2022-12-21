@@ -42,11 +42,6 @@ public class CustomerServiceImpl implements CustomerService {
         return repository.findById(id);
     }
 
-    private <T> Mono<T> close(Connection connection) {
-        return Mono.from(connection.close())
-                .then(Mono.empty());
-    }
-
     @Override
     public void delete(UUID id) {
         repository.deleteById(id);

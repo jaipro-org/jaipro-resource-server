@@ -1,0 +1,10 @@
+apiVersion: skaffold/v3
+kind: Config
+metadata:
+  name: eureka-resource-server
+manifests:
+  rawYaml:
+  - src/main/devops/deployment.yaml
+  - src/main/devops/hpa.yaml
+  - src/main/devops/ingress.yaml
+  - src/main/devops/service.yaml
