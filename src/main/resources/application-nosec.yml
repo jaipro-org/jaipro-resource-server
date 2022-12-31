@@ -4,3 +4,13 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://host.docker.internal:30010/auth/realms/eureka
+
+
+  # R2DBC Driver config
+  r2dbc:
+    url: ${PG_URL}
+    username: ${PG_USER}
+    password: ${PG_PWD}
+    pool:
+      initial-size: 10
+      max-idle-time: 30m

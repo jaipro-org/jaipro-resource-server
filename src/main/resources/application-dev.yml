@@ -5,5 +5,20 @@ spring:
         jwt:
           issuer-uri: http://host.docker.internal:30010/auth/realms/eureka
 
+  # GCP Secret Manager disabled
+  cloud:
+    gcp:
+      secretmanager:
+        enabled: false
+
+  # R2DBC Driver config
+  r2dbc:
+    url: ${PG_URL}
+    username: ${PG_USER}
+    password: ${PG_PWD}
+    pool:
+      initial-size: 10
+      max-idle-time: 30m
+
 logging:
   config: classpath:log4j2-dev-spring.xml

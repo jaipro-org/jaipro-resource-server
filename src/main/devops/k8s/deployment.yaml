@@ -1,29 +1,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ${SVC_NAME}
+  name: eureka-resource-server
   labels:
     service: eureka-resource-server
-    app: hogarep
+    app: jaipro
     type: backend
     consume: db
-    db: mongo
+    db: postgres
   namespace: default
 spec:
   selector:
     matchLabels:
-      service: ${SVC_NAME}
+      service: eureka-resource-server
       type: backend
   template:
     metadata:
-      name: ${SVC_NAME}
+      name: eureka-resource-server
       labels:
-        service: ${SVC_NAME}
+        service: eureka-resource-server
         type: backend
     spec:
       containers:
-        - name: ${SVC_NAME}
-          image: ${SVC_IMAGE}
+        - name: eureka-resource-server
+          image: peterzinho16/eureka-resource-server
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
@@ -33,31 +33,29 @@ spec:
               cpu: 200m
               memory: 200Mi
             limits:
-              memory: 600Mi
-              cpu: "2"
+              memory: 1024Mi
+              cpu: 500m
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
               port: 8080
-            initialDelaySeconds: 10
+            initialDelaySeconds: 80
             periodSeconds: 10
+            failureThreshold: 5
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
               port: 8080
-            initialDelaySeconds: 10
+            initialDelaySeconds: 80
             periodSeconds: 10
+            failureThreshold: 5
           env:
-            - name: SERVER_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: secret-eureka-resource-server
-                  key: SERVER_PORT
-            - name: SPRING_DATA_MONGODB_URI
-              valueFrom:
-                secretKeyRef:
-                  name: secret-eureka-resource-server
-                  key: SPRING_DATA_MONGODB_URI
+            - name: PG_URL
+              value: r2dbc:postgresql://localhost:5432/eureka?schema=default
+            - name: PG_USER
+              value: postgres
+            - name: PG_PWD
+              value: sql
   replicas: 1
   strategy:
     type: RollingUpdate
