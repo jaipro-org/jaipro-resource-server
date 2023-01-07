@@ -5,7 +5,7 @@ target/
 !**/src/test/**/target/
 
 ### LOGS
-eureka_resource_server_logs/
+jaipro_resource_server_logs/
 
 ### STS ###
 .apt_generated

@@ -8,11 +8,11 @@
         <version>2.7.3</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.bindord.eureka</groupId>
+    <groupId>com.bindord.jaipro</groupId>
     <artifactId>resourceserver</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>eureka-resource-server</name>
-    <description>eureka-resource-server</description>
+    <name>jaipro-resource-server</name>
+    <description>jaipro-resource-server</description>
     <properties>
         <java.version>11</java.version>
     </properties>

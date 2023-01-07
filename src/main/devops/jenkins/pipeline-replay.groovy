@@ -79,7 +79,7 @@ node {
             sh "sed -i 's/^/    /' $APPLICATION_PROPERTIES_PATH"
             sh "cat $APPLICATION_PROPERTIES_PATH >> $BASE_CONFIGMAP"*/
 
-            sh "cat 'eureka-resource-server/secret-dev.yaml'"
+            sh "cat 'jaipro-resource-server/secret-dev.yaml'"
         }
     }
 

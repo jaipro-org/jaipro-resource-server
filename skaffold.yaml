@@ -1,7 +1,7 @@
 apiVersion: skaffold/v3
 kind: Config
 metadata:
-  name: eureka-resource-server
+  name: jaipro-resource-server
 manifests:
   rawYaml:
   - src/main/devops/deployment.yaml

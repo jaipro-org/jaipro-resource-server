@@ -169,7 +169,7 @@ node {
         dir(SVC_FOLDER) {
 
             def IMAGE_PARAM = '${SVC_IMAGE}'
-            def SVC_NAME_PARAM = '${SVC_NAME}'
+            def SVC_NAME_PARAM = 'jaipro-resource-server'
 
             def keyValueProps = [
                     "$IMAGE_PARAM:$SVC_IMAGE",
@@ -189,7 +189,7 @@ node {
 
         dir(SVC_FOLDER) {
 
-            def SVC_NAME_PARAM = '${SVC_NAME}'
+            def SVC_NAME_PARAM = 'jaipro-resource-server'
 
             def keyValueProps = [
                     "$SVC_NAME_PARAM:$SVC_NAME"

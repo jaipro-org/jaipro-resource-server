@@ -2,7 +2,7 @@
 <Configuration status="WARN" monitorInterval="30">
     <Properties>
         <Property name="LOG_PATH">
-            eureka_resource_server_logs
+            jaipro_resource_server_logs
         </Property>
         <Property name="LOG_PATTERN">
             [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} --- [%15.15t] %-40.40c{1.} : %m%n%ex
@@ -37,23 +37,23 @@
         </RollingFile>
     </Appenders>
     <Loggers>
-        <Logger name="com.bindord.eureka.resourceserver.aop" level="info" additivity="false">
+        <Logger name="com.bindord.jaipro.resourceserver.aop" level="info" additivity="false">
             <AppenderRef ref="AppFileAppender"/>
             <AppenderRef ref="ConsoleAppender"/>
         </Logger>
-        <Logger name="com.bindord.eureka.resourceserver.configuration" level="info" additivity="false">
+        <Logger name="com.bindord.jaipro.resourceserver.configuration" level="info" additivity="false">
             <!--<AppenderRef ref="AppFileAppender"/>-->
             <AppenderRef ref="ConsoleAppender"/>
         </Logger>
-        <Logger name="com.bindord.eureka.resourceserver.service.impl" level="warn" additivity="false">
+        <Logger name="com.bindord.jaipro.resourceserver.service.impl" level="warn" additivity="false">
             <!--<AppenderRef ref="AppFileAppender"/>-->
             <AppenderRef ref="ConsoleAppender"/>
         </Logger>
-        <Logger name="com.bindord.eureka.resourceserver.service" level="warn" additivity="false">
+        <Logger name="com.bindord.jaipro.resourceserver.service" level="warn" additivity="false">
             <!--<AppenderRef ref="AppFileAppender"/>-->
             <AppenderRef ref="ConsoleAppender"/>
         </Logger>
-        <Logger name="com.bindord.eureka.resourceserver.advice" level="warn" additivity="false">
+        <Logger name="com.bindord.jaipro.resourceserver.advice" level="warn" additivity="false">
             <!--<AppenderRef ref="AppFileAppender"/>-->
             <AppenderRef ref="ConsoleAppender"/>
         </Logger>
@@ -62,7 +62,7 @@
             <AppenderRef ref="ConsoleAppender"/>
         </Logger>
 
-        <Logger name="com.bindord.eureka.resourceserver.service.impl.EmailServiceImpl" level="error" additivity="false">
+        <Logger name="com.bindord.jaipro.resourceserver.service.impl.EmailServiceImpl" level="error" additivity="false">
             <!--<AppenderRef ref="AppFileAppender"/>-->
             <AppenderRef ref="ConsoleAppender"/>
         </Logger>
