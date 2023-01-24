@@ -2,11 +2,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: jaipro-resource-server
+  namespace: jaipro
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
     - targetPort: 8080
       port: 8080
+      nodePort: 31080
   selector:
     service: jaipro-resource-server
     type: backend

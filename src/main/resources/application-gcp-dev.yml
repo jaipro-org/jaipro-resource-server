@@ -3,19 +3,19 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://35.202.209.155:30010/auth/realms/eureka
+          issuer-uri: http://34.71.32.155:8080/auth/realms/eureka
   # GCP Secret Manager
   cloud:
     gcp:
       secretmanager:
         enabled: true
-        project-id: 921811317837
+        project-id: 683555560813
 
   # R2DBC Driver config
   r2dbc:
     url: ${PG_URL}
-    username: ${sm://projects/921811317837/secrets/SQL_JAIPRO_DEV_APP_USER}
-    password: ${sm://projects/921811317837/secrets/SQL_JAIPRO_DEV_APP_PWD}
+    username: ${sm://projects/683555560813/secrets/SQL_JAIPRO_DEV_APP_USER}
+    password: ${sm://projects/683555560813/secrets/SQL_JAIPRO_DEV_APP_PWD}
     pool:
       initial-size: 10
       max-idle-time: 30m

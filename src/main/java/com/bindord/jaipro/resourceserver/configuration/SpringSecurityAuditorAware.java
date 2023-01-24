@@ -12,12 +12,15 @@ import reactor.core.publisher.Mono;
 @EnableR2dbcAuditing
 public class SpringSecurityAuditorAware implements ReactiveAuditorAware<String> {
 
+    public static final String NON_AUTHENTICATED_USER = "public-user";
+
     @Override
     public Mono<String> getCurrentAuditor() {
         return ReactiveSecurityContextHolder.getContext()
                 .map(SecurityContext::getAuthentication)
                 .filter(Authentication::isAuthenticated)
                 .map(Authentication::getPrincipal)
-                .map(auth -> ((CustomUserDetails) auth).getUsername());
+                .map(auth -> ((CustomUserDetails) auth).getUsername())
+                .switchIfEmpty(Mono.just(NON_AUTHENTICATED_USER));
     }
 }

@@ -160,10 +160,10 @@
                 <version>3.3.0</version>
                 <configuration>
                     <to>
-                        <image>gcr.io/speedy-rite-365303/${project.name}</image>
+                        <image>gcr.io/ancient-lattice-373518/${project.name}</image>
                     </to>
                     <container>
-                        <mainClass>${project.groupId}.${project.artifactId}.EurekaResourceServerApplication</mainClass>
+                        <mainClass>${project.groupId}.${project.artifactId}.JaiproResourceServerApplication</mainClass>
                     </container>
                 </configuration>
             </plugin>
