@@ -43,7 +43,7 @@ public class SpecialistBankAccount extends BaseDomain implements Persistable<UUI
     private boolean preferred;
 
     @Column
-    private Integer specialistId;
+    private UUID specialistId;
 
     @Column
     private Integer bankId;

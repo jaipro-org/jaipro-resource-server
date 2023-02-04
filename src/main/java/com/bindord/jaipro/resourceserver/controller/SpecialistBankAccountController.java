@@ -52,7 +52,8 @@ public class SpecialistBankAccountController {
     }
 
     @ApiResponse(description = "Find One by id", responseCode = "200")
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{id}",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     public Mono<SpecialistBankAccount> findOne(@PathVariable UUID id) throws NotFoundValidationException{
         return specialistBankAccountService.findOne(id);
     }
