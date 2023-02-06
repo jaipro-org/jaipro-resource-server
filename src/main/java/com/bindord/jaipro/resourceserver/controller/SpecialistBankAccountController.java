@@ -22,7 +22,7 @@ import java.util.UUID;
 @RequestMapping("${service.ingress.context-path}/specialist-bank-account")
 public class SpecialistBankAccountController {
 
-    private final Validator validator; 
+    private final Validator validator;
 
     private SpecialistBankAccountService specialistBankAccountService;
 
