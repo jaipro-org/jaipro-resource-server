@@ -32,7 +32,7 @@ public class SpecialistBankAccountDto {
     private boolean preferred;
 
     @Valid
-    private Integer specialistId;
+    private UUID specialistId;
 
     @Valid
     private Integer bankId;

@@ -56,7 +56,6 @@ public class SpecialistBankAccountServiceImpl implements SpecialistBankAccountSe
         return repository.findAllBySpecialistId(specialistId);
     }
 
-    /*Private*/
     private SpecialistBankAccount convertToEntityForNewCase(SpecialistBankAccountDto obj){
         var specialistBankAccount = new SpecialistBankAccount();
         BeanUtils.copyProperties(obj, specialistBankAccount);
