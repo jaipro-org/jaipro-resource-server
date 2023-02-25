@@ -25,7 +25,7 @@ spec:
       containers:
         - name: jaipro-resource-server
           image: gcr.io/ancient-lattice-373518/jaipro-resource-server
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
               name: netty-port
