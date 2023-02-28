@@ -1,6 +1,6 @@
-package com.bindord.jaipro.resourceserver.service.googleCloud.impl;
+package com.bindord.jaipro.resourceserver.service.gcloud.impl;
 
-import com.bindord.jaipro.resourceserver.service.googleCloud.GoogleCloudService;
+import com.bindord.jaipro.resourceserver.service.gcloud.GoogleCloudService;
 import com.google.auth.Credentials;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.BlobId;
@@ -8,10 +8,8 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
