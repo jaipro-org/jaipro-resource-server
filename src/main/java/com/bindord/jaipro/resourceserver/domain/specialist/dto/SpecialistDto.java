@@ -1,5 +1,6 @@
 package com.bindord.jaipro.resourceserver.domain.specialist.dto;
 
+import com.bindord.jaipro.resourceserver.domain.json.Photo;
 import com.bindord.jaipro.resourceserver.validation.ExtendedEmailValidator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -57,5 +58,10 @@ public class SpecialistDto {
 
     @Schema(example = "1")
     private Integer districtId;
+
+    @NotBlank
+    private String about;
+
+    private Photo profilePhoto;
 
 }

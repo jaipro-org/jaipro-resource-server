@@ -5,6 +5,7 @@ import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
 import com.bindord.jaipro.resourceserver.domain.specialist.Specialist;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistUpdateDto;
+import com.bindord.jaipro.resourceserver.service.googleCloud.GoogleCloudService;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecialistService;
 import com.bindord.jaipro.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -35,6 +37,8 @@ public class SpecialistController {
     private final Validator validator;
 
     private final SpecialistService specialistService;
+
+    private final GoogleCloudService googleCloudService;
 
     @ApiResponse(description = "Persist a specialist",
             responseCode = "200")
@@ -53,6 +57,8 @@ public class SpecialistController {
             consumes = {MediaType.APPLICATION_JSON_VALUE})
     public Mono<Specialist> update(@Valid @RequestBody SpecialistUpdateDto specialist)
             throws NotFoundValidationException, CustomValidationException {
+        System.out.println("specialist");
+        System.out.println(specialist.toString());
         return specialistService.update(specialist);
     }
 
@@ -79,5 +85,16 @@ public class SpecialistController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public Mono<Boolean> existsSpecialistByDocument(@RequestParam String document) throws NotFoundValidationException {
         return specialistService.existsSpecialistByDocument(document);
+    }
+    @ApiResponse(description = "Save file", responseCode = "200")
+   @PostMapping(value = "/files", consumes = {"multipart/form-data"})
+    public Mono<String> test(@RequestParam("file") MultipartFile file){
+        try{
+            System.out.println("entro");
+            String route = googleCloudService.saveFile(file.getBytes(), file.getOriginalFilename());
+            return Mono.just(route);
+        }catch (Exception ex){
+            return Mono.just(ex.getMessage());
+        }
     }
 }
