@@ -2,8 +2,8 @@ package com.bindord.jaipro.resourceserver.service.googleCloud;
 
 import java.io.File;
 
-public interface googleCloudService {
+public interface GoogleCloudService {
 
-    boolean saveFile(File file, String ruta);
+    String saveFile(byte[] file, String fileName);
 
 }

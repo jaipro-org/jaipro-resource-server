@@ -52,6 +52,8 @@ public class SpecialistCvController {
             consumes = {MediaType.APPLICATION_JSON_VALUE})
     public Mono<SpecialistCv> update(@Valid @RequestBody SpecialistCvUpdateDto specialist)
             throws NotFoundValidationException, CustomValidationException {
+        System.out.println("specialist-CV");
+        System.out.println(specialist.toString());
         return specialistCvService.update(specialist);
     }
 
