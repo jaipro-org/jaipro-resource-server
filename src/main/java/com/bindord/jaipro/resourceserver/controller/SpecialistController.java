@@ -5,7 +5,7 @@ import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
 import com.bindord.jaipro.resourceserver.domain.specialist.Specialist;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistUpdateDto;
-import com.bindord.jaipro.resourceserver.service.googleCloud.GoogleCloudService;
+import com.bindord.jaipro.resourceserver.service.gcloud.GoogleCloudService;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecialistService;
 import com.bindord.jaipro.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

@@ -1,6 +1,4 @@
-package com.bindord.jaipro.resourceserver.service.googleCloud;
-
-import java.io.File;
+package com.bindord.jaipro.resourceserver.service.gcloud;
 
 public interface GoogleCloudService {
 
