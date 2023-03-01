@@ -2,6 +2,6 @@ package com.bindord.jaipro.resourceserver.service.gcloud;
 
 public interface GoogleCloudService {
 
-    String saveFile(byte[] file, String fileName);
+    String saveFile(byte[] file, String fileName, String specialistIdStr);
 
 }
