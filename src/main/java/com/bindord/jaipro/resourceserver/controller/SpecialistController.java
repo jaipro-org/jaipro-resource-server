@@ -11,7 +11,9 @@ import com.bindord.jaipro.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
@@ -57,9 +60,8 @@ public class SpecialistController {
             consumes = {MediaType.APPLICATION_JSON_VALUE})
     public Mono<Specialist> update(@Valid @RequestBody SpecialistUpdateDto specialist)
             throws NotFoundValidationException, CustomValidationException {
-        System.out.println("specialist");
-        System.out.println(specialist.toString());
-        return specialistService.update(specialist);
+        return Mono.zip(specialistService.update(specialist), uploadFile(specialist.getFile(), specialist.getId().toString()))
+                .flatMap(t -> Mono.just(t.getT1()));
     }
 
     @ApiResponse(description = "List specialists",
@@ -86,13 +88,12 @@ public class SpecialistController {
     public Mono<Boolean> existsSpecialistByDocument(@RequestParam String document) throws NotFoundValidationException {
         return specialistService.existsSpecialistByDocument(document);
     }
-    @ApiResponse(description = "Save file", responseCode = "200")
-   @PostMapping(value = "/files", consumes = {"multipart/form-data"})
-    public Mono<String> test(@RequestParam("file") MultipartFile file){
+    private Mono<String> uploadFile(@RequestPart("file") FilePart file, String specialistId){
         try{
-            System.out.println("entro");
-            String route = googleCloudService.saveFile(file.getBytes(), file.getOriginalFilename());
-            return Mono.just(route);
+            return DataBufferUtils.join(file.content())
+                    .map(dataBuffer -> dataBuffer.asByteBuffer().array())
+                    .map(x -> googleCloudService.saveFile(x, file.filename(), specialistId))
+                    .flatMap(x-> Mono.just(x));
         }catch (Exception ex){
             return Mono.just(ex.getMessage());
         }

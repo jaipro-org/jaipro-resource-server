@@ -3,6 +3,7 @@ package com.bindord.jaipro.resourceserver.domain.specialist.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.http.codec.multipart.FilePart;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -32,5 +33,7 @@ public class SpecialistUpdateDto {
 
     @Schema(example = "1")
     private Integer districtId;
+
+    private FilePart file;
 
 }
