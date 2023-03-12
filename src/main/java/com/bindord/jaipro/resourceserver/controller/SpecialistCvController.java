@@ -5,6 +5,7 @@ import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
 import com.bindord.jaipro.resourceserver.domain.specialist.SpecialistCv;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvUpdateDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistExperienceUpdateDto;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecialistCvService;
 import com.bindord.jaipro.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -52,8 +53,6 @@ public class SpecialistCvController {
             consumes = {MediaType.APPLICATION_JSON_VALUE})
     public Mono<SpecialistCv> update(@Valid @RequestBody SpecialistCvUpdateDto specialist)
             throws NotFoundValidationException, CustomValidationException {
-        System.out.println("specialist-CV");
-        System.out.println(specialist.toString());
         return specialistCvService.update(specialist);
     }
 
@@ -74,4 +73,13 @@ public class SpecialistCvController {
         return specialistCvService.findOne(id);
     }
 
+    @ApiResponse(description = "Update a experience specialist cv",
+            responseCode = "200")
+    @PutMapping(value = "experience",
+            produces = {MediaType.APPLICATION_JSON_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public Mono<Boolean> updateExperience(@Valid @RequestBody SpecialistExperienceUpdateDto specialistExperience)
+            throws NotFoundValidationException, CustomValidationException {
+        return specialistCvService.updateExperience(specialistExperience);
+    }
 }

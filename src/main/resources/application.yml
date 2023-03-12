@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: gcp-dev
+    active: debug
 
 eureka:
   services:

@@ -1,31 +1,45 @@
-package com.bindord.jaipro.resourceserver.domain.specialist.json;
+package com.bindord.jaipro.resourceserver.domain.specialist.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
+import javax.validation.Valid;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
-@Data
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class Experience implements Serializable {
+@Setter
+@Getter
+public class SpecialistExperienceUpdateDto {
 
     @NotNull
+    @Valid
+    private int index;
+
+    @NotNull
+    @Valid
+    private UUID specialistCvId;
+
+    @NotNull
+    @Valid
     private Integer professionId;
 
     @NotBlank
     @Size(min = 3, max = 50)
+    @Valid
     private String professionName;
 
     @Schema(description = "Experience time in a profession expressed in months")
+    @Valid
     private Integer time;
 
     @FutureOrPresent
+    @Valid
     private LocalDateTime date;
 }

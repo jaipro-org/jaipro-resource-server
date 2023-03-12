@@ -4,6 +4,7 @@ import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
 import com.bindord.jaipro.resourceserver.domain.specialist.SpecialistSpecialization;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistSpecializationDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistSpecializationUpdateDto;
 import com.bindord.jaipro.resourceserver.repository.SpecialistSpecializationRepository;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecialistSpecializationService;
 import io.r2dbc.spi.Connection;
@@ -69,6 +70,22 @@ public class SpecialistSpecializationServiceImpl implements SpecialistSpecializa
     public Flux<SpecialistSpecialization> saveAll(Iterable<SpecialistSpecialization> specialistSpecializations) {
         specialistSpecializations.forEach(e->e.setNew(true));
         return repository.saveAll(specialistSpecializations);
+    }
+
+    @Override
+    public Mono<Boolean> UpdateExperience(SpecialistSpecializationUpdateDto entity) {
+        Flux<SpecialistSpecialization> qSpecialistSpecialization = repository.findAllByProfessionId(entity.getProfessionId());
+        return qSpecialistSpecialization.map(x -> {
+           if(!entity.getListSpecialitiesIds().contains(x.getSpecializationId())){
+               SpecialistSpecialization specialistSpecialization = new SpecialistSpecialization();
+               specialistSpecialization.setSpecialistId(x.getSpecialistId());
+               specialistSpecialization.setSpecialistId(x.getSpecialistId());
+               specialistSpecialization.setProfessionId(x.getProfessionId());
+
+               repository.save(specialistSpecialization);
+           }
+            return null;
+        }).then(Mono.just(true));
     }
 
     @Override
