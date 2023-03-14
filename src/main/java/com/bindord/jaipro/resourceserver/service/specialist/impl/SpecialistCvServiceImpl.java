@@ -81,20 +81,28 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
         Mono<SpecialistCv> qSpecialistCv = repository.findById(entity.getSpecialistCvId());
         return qSpecialistCv.map(x -> {
             try {
-                var test = ConvertJsonToClass(x.getExperienceTimes());
-                System.out.println(test);
-                return false;
+                var experiences = ConvertJsonToClass(x.getExperienceTimes());
+                var experience = experiences.get(entity.getIndex());
+                experience.setTime(entity.getTime());
+                experience.setProfessionName(entity.getProfessionName());
+                experience.setProfessionId(entity.getProfessionId());
+
+                experiences.set(entity.getIndex(), experience);
+
+                var objMapper = instanceObjectMapper();
+                x.setExperienceTimes(Json.of(objMapper.writeValueAsString(experiences)));
+                repository.save(x);
+                return true;
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                return false;
             }
-        }).then(Mono.just(true));
-        //var nose = qSpecialistCv.flatMap(x -> instanceObjectMapper().readValue(x.getExperienceTimes(), new TypeReference<>()));
+        });
     }
 
     private List<Experience> ConvertJsonToClass(Json json) throws IOException {
         var objectMapper = instanceObjectMapper();
 
-        List<Experience> participantJsonList = objectMapper.readValue(json.toString(), new TypeReference<List<Experience>>(){});
+        List<Experience> participantJsonList = objectMapper.readValue(json.asString(), new TypeReference<List<Experience>>(){});
         return participantJsonList;
     }
 
