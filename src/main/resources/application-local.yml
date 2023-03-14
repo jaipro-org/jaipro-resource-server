@@ -1,0 +1,18 @@
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://34.71.32.155:8080/auth/realms/eureka
+
+  # R2DBC Driver config
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/jaipro_dev?schema=jaipro
+    username: postgres
+    password: sql
+    pool:
+      initial-size: 10
+      max-idle-time: 30m
+
+logging:
+  config: classpath:log4j2-dev-spring.xml
