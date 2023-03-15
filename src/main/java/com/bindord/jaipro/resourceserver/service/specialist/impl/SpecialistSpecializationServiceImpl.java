@@ -79,7 +79,6 @@ public class SpecialistSpecializationServiceImpl implements SpecialistSpecializa
            if(!entity.getListSpecialitiesIds().contains(x.getSpecializationId())){
                SpecialistSpecialization specialistSpecialization = new SpecialistSpecialization();
                specialistSpecialization.setSpecialistId(x.getSpecialistId());
-               specialistSpecialization.setSpecialistId(x.getSpecialistId());
                specialistSpecialization.setProfessionId(x.getProfessionId());
 
                repository.save(specialistSpecialization);

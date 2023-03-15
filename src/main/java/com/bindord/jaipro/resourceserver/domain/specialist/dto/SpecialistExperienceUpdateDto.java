@@ -30,16 +30,7 @@ public class SpecialistExperienceUpdateDto {
     @Valid
     private Integer professionId;
 
-    @NotBlank
-    @Size(min = 3, max = 50)
-    @Valid
-    private String professionName;
-
     @Schema(description = "Experience time in a profession expressed in months")
     @Valid
     private Integer time;
-
-    @FutureOrPresent
-    @Valid
-    private LocalDateTime date;
 }

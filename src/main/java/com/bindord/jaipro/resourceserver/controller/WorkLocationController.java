@@ -28,7 +28,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Slf4j
 @RestController
-    @RequestMapping("${service.ingress.context-path}/work-location")
+@RequestMapping("${service.ingress.context-path}/work-location")
 @Validated
 public class WorkLocationController {
 
