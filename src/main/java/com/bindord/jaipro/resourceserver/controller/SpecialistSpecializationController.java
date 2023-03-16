@@ -4,6 +4,7 @@ import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
 import com.bindord.jaipro.resourceserver.domain.specialist.SpecialistSpecialization;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistSpecializationDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistSpecializationUpdateDto;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecialistSpecializationService;
 import com.bindord.jaipro.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -63,6 +64,16 @@ public class SpecialistSpecializationController {
     public Mono<SpecialistSpecialization> update(@Valid @RequestBody SpecialistSpecializationDto specialistSpecialization)
             throws NotFoundValidationException, CustomValidationException {
         return specialistSpecializationService.update(specialistSpecialization);
+    }
+
+    @ApiResponse(description = "Update a specialistSpecialization",
+            responseCode = "200")
+    @PutMapping(value = "update-experience",
+            produces = {MediaType.APPLICATION_JSON_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public Mono<Boolean> updateExperience(@Valid @RequestBody SpecialistSpecializationUpdateDto specialistSpecialization)
+            throws NotFoundValidationException, CustomValidationException {
+        return specialistSpecializationService.UpdateExperience(specialistSpecialization);
     }
 
     @ApiResponse(description = "List specialistSpecializations",

@@ -17,7 +17,7 @@ import java.util.UUID;
 public class Experience implements Serializable {
 
     @NotNull
-    private UUID professionId;
+    private Integer professionId;
 
     @NotBlank
     @Size(min = 3, max = 50)
@@ -28,4 +28,5 @@ public class Experience implements Serializable {
 
     @FutureOrPresent
     private LocalDateTime date;
+
 }

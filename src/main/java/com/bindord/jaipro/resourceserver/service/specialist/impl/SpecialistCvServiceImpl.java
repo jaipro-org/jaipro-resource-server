@@ -5,8 +5,12 @@ import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
 import com.bindord.jaipro.resourceserver.domain.specialist.SpecialistCv;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvUpdateDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistExperienceUpdateDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.json.Experience;
 import com.bindord.jaipro.resourceserver.repository.SpecialistCvRepository;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecialistCvService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.r2dbc.postgresql.codec.Json;
 import io.r2dbc.spi.Connection;
 import lombok.AllArgsConstructor;
@@ -16,6 +20,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.getNullPropertyNames;
@@ -70,6 +76,32 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
         return repository.findAll();
     }
 
+    @Override
+    public Mono<Boolean> updateExperience(SpecialistExperienceUpdateDto entity) {
+        Mono<SpecialistCv> qSpecialistCv = repository.findById(entity.getSpecialistCvId());
+        return qSpecialistCv.map(qScv -> {
+            try {
+                var experiences = convertJsonToClass(qScv.getExperienceTimes());
+                var experience = experiences.get(entity.getIndex());
+                experience.setTime(entity.getTime());
+                experiences.set(entity.getIndex(), experience);
+
+                var objMapper = instanceObjectMapper();
+                qScv.setExperienceTimes(Json.of(objMapper.writeValueAsString(experiences)));
+                repository.save(qScv);
+                return true;
+            } catch (IOException e) {
+                return false;
+            }
+        });
+    }
+
+    private List<Experience> convertJsonToClass(Json json) throws IOException {
+        var objectMapper = instanceObjectMapper();
+
+        List<Experience> participantJsonList = objectMapper.readValue(json.asString(), new TypeReference<List<Experience>>(){});
+        return participantJsonList;
+    }
 
     @SneakyThrows
     private SpecialistCv convertToEntity(SpecialistCvUpdateDto obj, SpecialistCv specialistCv) {
