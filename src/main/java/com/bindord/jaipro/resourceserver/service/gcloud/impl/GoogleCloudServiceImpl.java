@@ -7,31 +7,28 @@ import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 
-@AllArgsConstructor
 @Service
 public class GoogleCloudServiceImpl implements GoogleCloudService {
 
     @Value("${spring.gcp.storage.path-credentials}")
-    private final String PATH_CREDENTIALS;
+    private String PATH_CREDENTIALS;
 
     @Value("${spring.gcp.storage.project-id}")
-    private final String PROJECT_ID;
+    private String PROJECT_ID;
 
     @Value("${spring.gcp.storage.save}")
-    private final String PATH_SAVE;
+    private String PATH_SAVE;
 
     @Value("${spring.gcp.storage.bucket}")
-    private final String BUCKET;
+    private String BUCKET;
     @Value("${spring.gcp.storage.url-autenticada}")
-    private final String URL_AUTENTICADA;
-
+    private String URL_AUTENTICADA;
 
     @Override
     public String saveFile(byte[] file, String fileName, String specialistIdStr) {
@@ -45,7 +42,7 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
         return URL_AUTENTICADA.concat(fileName);
     }
 
-    private Storage getStorage(){
+    private Storage getStorage() {
         try {
             Credentials credentials = GoogleCredentials.fromStream(new FileInputStream(PATH_CREDENTIALS));
             Storage storage = StorageOptions.newBuilder().setCredentials(credentials)
