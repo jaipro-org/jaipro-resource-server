@@ -59,9 +59,4 @@ public class SpecialistDto {
     @Schema(example = "1")
     private Integer districtId;
 
-    @NotBlank
-    private String about;
-
-    private Photo profilePhoto;
-
 }
