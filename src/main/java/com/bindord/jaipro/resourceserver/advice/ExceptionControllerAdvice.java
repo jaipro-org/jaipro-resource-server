@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.server.ServerWebInputException;
 import reactor.core.publisher.Mono;
 
 import javax.validation.ConstraintViolationException;
@@ -45,6 +46,7 @@ public class ExceptionControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(WebExchangeBindException.class)
     public Mono<ApiError> handleBindException(WebExchangeBindException ex) {
+        LOGGER.warn("method {}", "handleBindException");
         ex.getModel().entrySet().forEach(e -> {
             LOGGER.warn(e.getKey() + ": " + e.getValue());
         });
@@ -58,7 +60,8 @@ public class ExceptionControllerAdvice {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
-    public Mono<ApiError> handleBindException(IllegalArgumentException ex) {
+    public Mono<ApiError> handleIllegalArgumentException(IllegalArgumentException ex) {
+        LOGGER.warn("method {}", "handleIllegalArgumentException");
         return Mono.just(new ApiError(ex.getMessage(), ex));
     }
 
@@ -66,26 +69,35 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(NotFoundValidationException.class)
     public @ResponseBody
     Mono<ApiError> handlerNotFoundValidationException(NotFoundValidationException ex) {
+        LOGGER.warn("method {}", "handlerNotFoundValidationException");
         return Mono.just(new ApiError(ex));
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(WebClientResponseException.class)
     public @ResponseBody
-    ErrorResponse handlerWebClientResponseException(WebClientResponseException ex)
+    Mono<ErrorResponse> handlerWebClientResponseException(WebClientResponseException ex)
             throws JsonProcessingException {
+        LOGGER.warn("method {}", "handlerWebClientResponseException");
         LOGGER.warn(ex.getMessage());
         var lenStackTrace = ex.getStackTrace().length;
         for (int i = 0; i < lenStackTrace; i++) {
             LOGGER.warn(ex.getStackTrace()[i].toString());
         }
-        return mapper.readValue(ex.getResponseBodyAsString(), ErrorResponse.class);
+        if (ex.getRawStatusCode() == HttpStatus.UNAUTHORIZED.value()) {
+            var err = new ErrorResponse();
+            err.setCode(String.valueOf(HttpStatus.UNAUTHORIZED.value()));
+            err.setMessage(ex.getMessage());
+            return Mono.just(err);
+        }
+        return Mono.just(mapper.readValue(ex.getResponseBodyAsString(), ErrorResponse.class));
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(DataIntegrityViolationException.class)
     public @ResponseBody
-    ErrorResponse handlerDataIntegrityViolationException(DataIntegrityViolationException ex) {
+    Mono<ErrorResponse> handlerDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        LOGGER.warn("method {}", "handlerDataIntegrityViolationException");
 
         R2dbcDataIntegrityViolationException cve = null;
         boolean isCVE = ex.getCause() instanceof R2dbcDataIntegrityViolationException;
@@ -102,34 +114,44 @@ public class ExceptionControllerAdvice {
         if (mostSpecCause.contains(SQL_DUP_EXCEP_PREFIX) ||
                 mostSpecCause.contains(SQL_DUP_EXCEP_PREFIX_ES)) {
             if (mostSpecCause.contains(TEMP_UNIQUE_CONS_ONE)) {
-                return new ErrorResponse(TEMP_UC_ONE_MSG, SQL_UNIQUE_VIOLATION_CODE);
+                return Mono.just(new ErrorResponse(TEMP_UC_ONE_MSG, SQL_UNIQUE_VIOLATION_CODE));
             }
 
             if (mostSpecCause.contains(TEMP_UNIQUE_CONS_TWO)) {
-                return new ErrorResponse(TEMP_UC_TWO_MSG, SQL_UNIQUE_VIOLATION_CODE);
+                return Mono.just(new ErrorResponse(TEMP_UC_TWO_MSG, SQL_UNIQUE_VIOLATION_CODE));
             }
         }
         String sqlStateCode = isCVE ? cve.getSqlState() : "";
         if (sqlStateCode.isEmpty()) {
-            return new ErrorResponse(mostSpecCause, SQL_UNIQUE_VIOLATION_CODE);
+            return Mono.just(new ErrorResponse(mostSpecCause, SQL_UNIQUE_VIOLATION_CODE));
         } else {
             var prevCause = cve.getCause();
             String cause = prevCause != null ? cve.getCause().getMessage() : cve.getMessage();
-            return new ErrorResponse(cause, sqlStateCode);
+            return Mono.just(new ErrorResponse(cause, sqlStateCode));
         }
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BadSqlGrammarException.class)
     public @ResponseBody
-    Mono<ApiError> handlerDataIntegrityViolationException(BadSqlGrammarException ex) {
+    Mono<ApiError> handlerBadSqlGrammarException(BadSqlGrammarException ex) {
+        LOGGER.warn("method {}", "handlerBadSqlGrammarException");
         return Mono.just(new ApiError(ex.getMessage(), ex));
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException.class)
-    public Mono<ApiError> handleBindException(ConstraintViolationException ex) {
+    public Mono<ApiError> handleConstraintViolationException(ConstraintViolationException ex) {
+        LOGGER.warn("method {}", "handleConstraintViolationException");
         LOGGER.warn(ex.getMessage());
+        return Mono.just(new ApiError(ex.getMessage(), ex));
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ServerWebInputException.class)
+    public @ResponseBody
+    Mono<ApiError> handleServerWebInputException(ServerWebInputException ex) {
+        LOGGER.warn("method {}", "handleServerWebInputException");
         return Mono.just(new ApiError(ex.getMessage(), ex));
     }
 }

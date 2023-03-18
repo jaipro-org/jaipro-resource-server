@@ -1,6 +1,5 @@
 package com.bindord.jaipro.resourceserver.domain.specialist.dto;
 
-import com.bindord.jaipro.resourceserver.domain.json.Photo;
 import com.bindord.jaipro.resourceserver.validation.ExtendedEmailValidator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
