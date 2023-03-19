@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.bindord.jaipro.resourceserver.configuration.JacksonFactory.getObjectMapper;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @RestControllerAdvice
 public class ExceptionControllerAdvice {
@@ -70,7 +71,7 @@ public class ExceptionControllerAdvice {
     public @ResponseBody
     Mono<ApiError> handlerNotFoundValidationException(NotFoundValidationException ex) {
         LOGGER.warn("method {}", "handlerNotFoundValidationException");
-        return Mono.just(new ApiError(ex));
+        return Mono.just(new ApiError(ex.getMessage(), ex));
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
@@ -90,7 +91,7 @@ public class ExceptionControllerAdvice {
             err.setMessage(ex.getMessage());
             return Mono.just(err);
         }
-        return Mono.just(mapper.readValue(ex.getResponseBodyAsString(), ErrorResponse.class));
+        return Mono.just(mapper.readValue(ex.getResponseBodyAsString(UTF_8), ErrorResponse.class));
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

@@ -39,7 +39,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Override
     public Mono<UserInfo> findOne(UUID id) throws NotFoundValidationException {
-        return repository.findById(id);
+        return repository.findById(id).switchIfEmpty(Mono.error(new NotFoundValidationException("404")));
     }
 
     private <T> Mono<T> close(Connection connection) {
