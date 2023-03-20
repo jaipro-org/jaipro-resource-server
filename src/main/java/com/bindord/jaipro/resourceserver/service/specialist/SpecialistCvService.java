@@ -1,9 +1,11 @@
 package com.bindord.jaipro.resourceserver.service.specialist;
 
+import com.bindord.jaipro.resourceserver.domain.json.Photo;
 import com.bindord.jaipro.resourceserver.domain.specialist.SpecialistCv;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistExperienceUpdateDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistGalleryUpdateDto;
 import com.bindord.jaipro.resourceserver.generic.BaseService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -15,4 +17,5 @@ public interface SpecialistCvService extends BaseService<SpecialistCv, UUID, Spe
     Flux<SpecialistCv> findAllNative();
 
     Mono<Boolean> updateExperience(SpecialistExperienceUpdateDto entity);
+    Flux<Photo> updateGallery(SpecialistGalleryUpdateDto entity);
 }
