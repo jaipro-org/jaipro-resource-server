@@ -4,6 +4,9 @@ import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
 import com.bindord.jaipro.resourceserver.domain.customer.Customer;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerDto;
+import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerInformationUpdateDto;
+import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerLocationUpdateDto;
+import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerPasswordUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerUpdateDto;
 import com.bindord.jaipro.resourceserver.service.customer.CustomerService;
 import com.bindord.jaipro.resourceserver.validator.Validator;
@@ -72,4 +75,33 @@ public class CustomerController {
         return customerService.findOne(id);
     }
 
+    @ApiResponse(description = "Update a customer about",
+            responseCode = "200")
+    @PutMapping(value = "/updateAbout",
+            produces = {MediaType.APPLICATION_JSON_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public Mono<Customer> updateAbout(@Valid @RequestBody CustomerInformationUpdateDto customer)
+            throws NotFoundValidationException, CustomValidationException {
+        return customerService.updateAbout(customer);
+    }
+
+    @ApiResponse(description = "Update a customer location",
+            responseCode = "200")
+    @PutMapping(value = "/updateLocation",
+            produces = {MediaType.APPLICATION_JSON_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public Mono<Boolean> updateLocation(@Valid @RequestBody CustomerLocationUpdateDto customer)
+            throws NotFoundValidationException, CustomValidationException {
+        return customerService.updateLocation(customer);
+    }
+
+    @ApiResponse(description = "Update a customer password",
+            responseCode = "200")
+    @PutMapping(value = "/updatePassword",
+            produces = {MediaType.APPLICATION_JSON_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public Mono<Boolean> updatePassword(@Valid @RequestBody CustomerPasswordUpdateDto customer)
+            throws NotFoundValidationException, CustomValidationException {
+        return customerService.updatePassword(customer);
+    }
 }

@@ -4,6 +4,9 @@ import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
 import com.bindord.jaipro.resourceserver.domain.customer.Customer;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerDto;
+import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerInformationUpdateDto;
+import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerLocationUpdateDto;
+import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerPasswordUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerUpdateDto;
 import com.bindord.jaipro.resourceserver.repository.CustomerRepository;
 import com.bindord.jaipro.resourceserver.service.customer.CustomerService;
@@ -59,6 +62,55 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Flux<Customer> findAllNative() {
         return repository.findAll();
+    }
+
+    @Override
+    public Mono<Customer> updateAbout(CustomerInformationUpdateDto entity) {
+        Mono<Customer> qCustomer = repository.findById(entity.getId());
+        return qCustomer.flatMap(qCus -> {
+           qCus.setName(entity.getName());
+           qCus.setLastName(entity.getLastName());
+           qCus.setEmail(entity.getEmail());
+           qCus.setPhone(entity.getPhone());
+
+           repository.save(qCus);
+
+           return Mono.just(qCus);
+        });
+    }
+
+    @Override
+    public Mono<Boolean> updateLocation(CustomerLocationUpdateDto entity) {
+        Mono<Customer> qCustomer = repository.findById(entity.getId());
+        return qCustomer.flatMap(qCus -> {
+            try{
+                qCus.setAddress(entity.getAddress());
+                qCus.setDistrictId(entity.getDistrictId());
+
+                repository.save(qCus);
+
+                return Mono.just(true);
+            }catch (Exception ex){
+                return Mono.just(false);
+            }
+        });
+    }
+
+    @Override
+    public Mono<Boolean> updatePassword(CustomerPasswordUpdateDto entity) {
+        Mono<Customer> qCustomer = repository.findById(entity.getId());
+        return qCustomer.flatMap(qCus -> {
+            try{
+                /*qCus.set(entity.getAddress());
+                qCus.setDistrictId(entity.getDistrictId());*/
+
+                repository.save(qCus);
+
+                return Mono.just(true);
+            }catch (Exception ex){
+                return Mono.just(false);
+            }
+        });
     }
 
 
