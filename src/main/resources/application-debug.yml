@@ -18,6 +18,7 @@ spring:
 logging:
   config: classpath:log4j2-debug-spring.xml
   level:
+    io.r2dbc.postgresql.client: DEBUG # for database initialization
     io.r2dbc.postgresql.QUERY: DEBUG # for queries
     io.r2dbc.postgresql.PARAM: DEBUG # for parameters
     org:

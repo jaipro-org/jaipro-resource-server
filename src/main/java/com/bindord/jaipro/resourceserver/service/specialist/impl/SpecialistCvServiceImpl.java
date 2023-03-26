@@ -19,7 +19,6 @@ import io.r2dbc.spi.Connection;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
@@ -31,6 +30,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static com.bindord.jaipro.resourceserver.utils.Constants.MAX_GALLERY_FILES;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.getNullPropertyNames;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.instanceObjectMapper;
 import static java.util.Objects.isNull;
@@ -43,9 +43,6 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     private final SpecialistCvRepository repository;
 
     private final GoogleCloudService googleCloudService;
-
-    @Value("6")
-    private Integer MAX_GALLERY_FILES;
 
     @Override
     public Mono<SpecialistCv> save(SpecialistCvDto entity) throws NotFoundValidationException, CustomValidationException {
@@ -112,13 +109,13 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     public Flux<Photo> updateGallery(SpecialistGalleryUpdateDto entity) {
         Mono<SpecialistCv> qSpecialistCv = repository.findById(entity.getSpecialistCvId());
         return qSpecialistCv.map(qScv -> {
-            try{
+            try {
                 List<Photo> gallery = convertJsonToClassPhoto(qScv.getGallery());
-                for (String url: entity.getFilesRemove()) {
+                for (String url : entity.getFilesRemove()) {
                     gallery.removeIf(x -> x.getUrl().equals(url));
                 }
 
-                for (var file: entity.getFiles()) {
+                for (var file : entity.getFiles()) {
                     byte[] bytes = getBytesToFilePart(file).block();
                     String path = entity.getSpecialistCvId() + "/gallery/";
                     String url = googleCloudService.saveFile(bytes, file.filename(), path);
@@ -132,7 +129,7 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
                     gallery.add(photo);
                 }
 
-                if(gallery.size() > MAX_GALLERY_FILES){
+                if (gallery.size() > MAX_GALLERY_FILES) {
                     throw new Exception("La cantidad de imagenes es superior a la esperada");
                 }
 
@@ -141,13 +138,13 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
                 repository.save(qScv);
 
                 return gallery;
-            }catch (Exception e){
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }).flatMapIterable(g -> g);
     }
 
-    private Flux<Integer> sizeFile(FilePart file){
+    private Flux<Integer> sizeFile(FilePart file) {
         return file.content() // for one file, is a Flux with one element
                 .map(dataBuffer -> {
                     byte[] bytes = new byte[dataBuffer.readableByteCount()];
@@ -159,14 +156,16 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     private List<Experience> convertJsonToClass(Json json) throws IOException {
         var objectMapper = instanceObjectMapper();
 
-        List<Experience> participantJsonList = objectMapper.readValue(json.asString(), new TypeReference<List<Experience>>(){});
+        List<Experience> participantJsonList = objectMapper.readValue(json.asString(), new TypeReference<List<Experience>>() {
+        });
         return participantJsonList;
     }
 
     private List<Photo> convertJsonToClassPhoto(Json json) throws IOException {
         var objectMapper = instanceObjectMapper();
 
-        List<Photo> photos = objectMapper.readValue(json.asString(), new TypeReference<List<Photo>>(){});
+        List<Photo> photos = objectMapper.readValue(json.asString(), new TypeReference<List<Photo>>() {
+        });
         return photos;
     }
 
@@ -174,22 +173,22 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     private SpecialistCv convertToEntity(SpecialistCvUpdateDto obj, SpecialistCv specialistCv) {
         BeanUtils.copyProperties(obj, specialistCv, getNullPropertyNames(obj));
         var objMapper = instanceObjectMapper();
-        if(!isEmpty(obj.getSocialNetworks()))
+        if (!isEmpty(obj.getSocialNetworks()))
             specialistCv.setSocialNetworks(
                     Json.of(
                             objMapper.writeValueAsString(obj.getSocialNetworks())
                     ));
-        if(!isEmpty(obj.getGallery()))
+        if (!isEmpty(obj.getGallery()))
             specialistCv.setGallery(
                     Json.of(
                             objMapper.writeValueAsString(obj.getGallery())
                     ));
-        if(!isEmpty(obj.getExperienceTimes()))
+        if (!isEmpty(obj.getExperienceTimes()))
             specialistCv.setExperienceTimes(
                     Json.of(
                             objMapper.writeValueAsString(obj.getExperienceTimes())
                     ));
-        if(!isNull(obj.getProfilePhoto()))
+        if (!isNull(obj.getProfilePhoto()))
             specialistCv.setProfilePhoto(
                     Json.of(
                             objMapper.writeValueAsString(obj.getProfilePhoto())
@@ -231,7 +230,7 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
         );
     }
 
-    private Mono<byte[]> getBytesToFilePart(FilePart file){
+    private Mono<byte[]> getBytesToFilePart(FilePart file) {
         return DataBufferUtils.join(file.content())
                 .map(dataBuffer -> dataBuffer.asByteBuffer().array())
                 .map(x -> x);
