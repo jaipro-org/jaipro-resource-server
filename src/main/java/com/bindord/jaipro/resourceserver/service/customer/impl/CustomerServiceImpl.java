@@ -68,32 +68,18 @@ public class CustomerServiceImpl implements CustomerService {
     public Mono<Customer> updateAbout(CustomerInformationUpdateDto entity) {
         Mono<Customer> qCustomer = repository.findById(entity.getId());
         return qCustomer.flatMap(qCus -> {
-           qCus.setName(entity.getName());
-           qCus.setLastName(entity.getLastName());
-           qCus.setEmail(entity.getEmail());
-           qCus.setPhone(entity.getPhone());
-
-           repository.save(qCus);
-
+           repository.save(convertToEntity(entity, qCus));
            return Mono.just(qCus);
-        });
+        }).doOnError(x -> Mono.error(x));
     }
 
     @Override
     public Mono<Boolean> updateLocation(CustomerLocationUpdateDto entity) {
         Mono<Customer> qCustomer = repository.findById(entity.getId());
         return qCustomer.flatMap(qCus -> {
-            try{
-                qCus.setAddress(entity.getAddress());
-                qCus.setDistrictId(entity.getDistrictId());
-
-                repository.save(qCus);
-
-                return Mono.just(true);
-            }catch (Exception ex){
-                return Mono.just(false);
-            }
-        });
+            repository.save(convertToEntity(entity, qCus));
+            return Mono.just(true);
+        }).doOnError(x -> Mono.error(x));
     }
 
     @Override
@@ -121,6 +107,16 @@ public class CustomerServiceImpl implements CustomerService {
                         convertJSONtoString(obj.getProfilePhoto())
                 )
         );
+        return customer;
+    }
+
+    private Customer convertToEntity(CustomerLocationUpdateDto obj, Customer customer) {
+        BeanUtils.copyProperties(obj, customer, getNullPropertyNames(obj));
+        return customer;
+    }
+
+    private Customer convertToEntity(CustomerInformationUpdateDto obj, Customer customer) {
+        BeanUtils.copyProperties(obj, customer, getNullPropertyNames(obj));
         return customer;
     }
 
