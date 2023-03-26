@@ -2,10 +2,12 @@ package com.bindord.jaipro.resourceserver.controller;
 
 import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
+import com.bindord.jaipro.resourceserver.domain.json.Photo;
 import com.bindord.jaipro.resourceserver.domain.specialist.SpecialistCv;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistExperienceUpdateDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistGalleryUpdateDto;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecialistCvService;
 import com.bindord.jaipro.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -81,5 +83,15 @@ public class SpecialistCvController {
     public Mono<Boolean> updateExperience(@Valid @RequestBody SpecialistExperienceUpdateDto specialistExperience)
             throws NotFoundValidationException, CustomValidationException {
         return specialistCvService.updateExperience(specialistExperience);
+    }
+
+    @ApiResponse(description = "Update gallery to specialist cv",
+            responseCode = "200")
+    @PutMapping(value = "gallery",
+            produces = {MediaType.APPLICATION_JSON_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public Flux<Photo> updateGallery(@Valid @RequestBody SpecialistGalleryUpdateDto specialistGallery)
+            throws NotFoundValidationException{
+        return specialistCvService.updateGallery(specialistGallery);
     }
 }
