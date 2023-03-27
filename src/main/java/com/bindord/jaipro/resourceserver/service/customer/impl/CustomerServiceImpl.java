@@ -68,8 +68,8 @@ public class CustomerServiceImpl implements CustomerService {
     public Mono<Customer> updateAbout(CustomerInformationUpdateDto entity) {
         Mono<Customer> qCustomer = repository.findById(entity.getId());
         return qCustomer.flatMap(qCus -> {
-           repository.save(convertToEntity(entity, qCus));
-           return Mono.just(qCus);
+            repository.save(convertToEntity(entity, qCus));
+            return Mono.just(qCus);
         }).doOnError(x -> Mono.error(x));
     }
 
@@ -86,14 +86,10 @@ public class CustomerServiceImpl implements CustomerService {
     public Mono<Boolean> updatePassword(CustomerPasswordUpdateDto entity) {
         Mono<Customer> qCustomer = repository.findById(entity.getId());
         return qCustomer.flatMap(qCus -> {
-            try{
-                /*qCus.set(entity.getAddress());
-                qCus.setDistrictId(entity.getDistrictId());*/
-
+            try {
                 repository.save(qCus);
-
                 return Mono.just(true);
-            }catch (Exception ex){
+            } catch (Exception ex) {
                 return Mono.just(false);
             }
         });
