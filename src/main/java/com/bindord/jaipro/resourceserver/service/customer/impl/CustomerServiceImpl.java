@@ -4,6 +4,9 @@ import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
 import com.bindord.jaipro.resourceserver.domain.customer.Customer;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerDto;
+import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerInformationUpdateDto;
+import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerLocationUpdateDto;
+import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerPasswordUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerUpdateDto;
 import com.bindord.jaipro.resourceserver.repository.CustomerRepository;
 import com.bindord.jaipro.resourceserver.service.customer.CustomerService;
@@ -61,6 +64,41 @@ public class CustomerServiceImpl implements CustomerService {
         return repository.findAll();
     }
 
+    @Override
+    public Mono<Customer> updateAbout(CustomerInformationUpdateDto entity) {
+        Mono<Customer> qCustomer = repository.findById(entity.getId());
+        return qCustomer.flatMap(qCus -> {
+           repository.save(convertToEntity(entity, qCus));
+           return Mono.just(qCus);
+        }).doOnError(x -> Mono.error(x));
+    }
+
+    @Override
+    public Mono<Boolean> updateLocation(CustomerLocationUpdateDto entity) {
+        Mono<Customer> qCustomer = repository.findById(entity.getId());
+        return qCustomer.flatMap(qCus -> {
+            repository.save(convertToEntity(entity, qCus));
+            return Mono.just(true);
+        }).doOnError(x -> Mono.error(x));
+    }
+
+    @Override
+    public Mono<Boolean> updatePassword(CustomerPasswordUpdateDto entity) {
+        Mono<Customer> qCustomer = repository.findById(entity.getId());
+        return qCustomer.flatMap(qCus -> {
+            try{
+                /*qCus.set(entity.getAddress());
+                qCus.setDistrictId(entity.getDistrictId());*/
+
+                repository.save(qCus);
+
+                return Mono.just(true);
+            }catch (Exception ex){
+                return Mono.just(false);
+            }
+        });
+    }
+
 
     private Customer convertToEntity(CustomerUpdateDto obj, Customer customer) {
         BeanUtils.copyProperties(obj, customer, getNullPropertyNames(obj));
@@ -69,6 +107,16 @@ public class CustomerServiceImpl implements CustomerService {
                         convertJSONtoString(obj.getProfilePhoto())
                 )
         );
+        return customer;
+    }
+
+    private Customer convertToEntity(CustomerLocationUpdateDto obj, Customer customer) {
+        BeanUtils.copyProperties(obj, customer, getNullPropertyNames(obj));
+        return customer;
+    }
+
+    private Customer convertToEntity(CustomerInformationUpdateDto obj, Customer customer) {
+        BeanUtils.copyProperties(obj, customer, getNullPropertyNames(obj));
         return customer;
     }
 
