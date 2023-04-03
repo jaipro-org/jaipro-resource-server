@@ -24,7 +24,7 @@ spec:
       serviceAccountName: jaipro-sa
       containers:
         - name: jaipro-resource-server
-          image: gcr.io/ancient-lattice-373518/jaipro-resource-server
+          image: gcr.io/pure-anthem-382602/jaipro-resource-server
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -52,7 +52,7 @@ spec:
             failureThreshold: 5
           env:
             - name: PG_URL
-              value: r2dbc:postgresql://10.94.0.3:5432/jaipro_dev?schema=jaipro
+              value: r2dbc:postgresql://10.60.48.3:5432/jaipro_dev?schema=jaipro
   replicas: 1
   strategy:
     type: RollingUpdate
