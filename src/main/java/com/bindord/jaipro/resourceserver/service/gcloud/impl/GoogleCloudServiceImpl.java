@@ -9,9 +9,14 @@ import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.UUID;
+
+import static com.bindord.jaipro.resourceserver.utils.Constants.CUSTOMER_PHOTO_PATH;
+import static com.bindord.jaipro.resourceserver.utils.Constants.SPECIALIST_PHOTO_PATH;
 
 @Service
 public class GoogleCloudServiceImpl implements GoogleCloudService {
@@ -22,33 +27,49 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
     @Value("${spring.gcp.storage.project-id}")
     private String PROJECT_ID;
 
-    @Value("${spring.gcp.storage.save}")
-    private String PATH_SAVE;
-
     @Value("${spring.gcp.storage.bucket}")
     private String BUCKET;
     @Value("${spring.gcp.storage.url-autenticada}")
     private String URL_AUTENTICADA;
 
     @Override
-    public String saveFile(byte[] file, String fileName, String specialistIdStr) {
-        Storage storage = getStorage();
+    public Mono<String> saveCustomerPhoto(byte[] file, UUID customerId) {
 
-        String path = PATH_SAVE.format(specialistIdStr, fileName);
-        BlobId id = BlobId.of(BUCKET, path);
-        BlobInfo info = BlobInfo.newBuilder(id).build();
-        storage.create(info, file);
+        String customerIdStr =  customerId.toString();
+        String path = CUSTOMER_PHOTO_PATH
+                            .replace("[ID]", customerIdStr)
+                            .replace("[FILENAME]", customerIdStr);
 
-        return URL_AUTENTICADA.concat(fileName);
+        return SaveFile(file, path);
     }
 
-    private Storage getStorage() {
+    @Override
+    public Mono<String> saveSpecialistPhoto(byte[] file, UUID specialistId) {
+
+        String specialistIdStr = specialistId.toString();
+        String path = SPECIALIST_PHOTO_PATH
+                            .replace("[ID]", specialistIdStr)
+                            .replace("[FILENAME]", specialistIdStr);
+
+        return SaveFile(file, path);
+    }
+
+    private Mono<String> SaveFile(byte[] file, String path) {
+        BlobId blobId = BlobId.of(BUCKET, path);
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
+
+        return getStorage()
+                    .map(storage -> storage.create(blobInfo, file))
+                    .then(Mono.just(URL_AUTENTICADA.concat(path)));
+    }
+
+    private Mono<Storage> getStorage() {
         try {
             Credentials credentials = GoogleCredentials.fromStream(new FileInputStream(PATH_CREDENTIALS));
             Storage storage = StorageOptions.newBuilder().setCredentials(credentials)
                     .setProjectId(PROJECT_ID).build().getService();
 
-            return storage;
+            return Mono.just(storage);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

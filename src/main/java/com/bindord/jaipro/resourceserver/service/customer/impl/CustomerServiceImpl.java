@@ -8,6 +8,8 @@ import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerInformation
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerLocationUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerPasswordUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerUpdateDto;
+import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerUpdatePhotoDto;
+import com.bindord.jaipro.resourceserver.domain.json.Photo;
 import com.bindord.jaipro.resourceserver.repository.CustomerRepository;
 import com.bindord.jaipro.resourceserver.service.customer.CustomerService;
 import io.r2dbc.postgresql.codec.Json;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.convertJSONtoString;
@@ -78,6 +81,21 @@ public class CustomerServiceImpl implements CustomerService {
         Mono<Customer> qCustomer = repository.findById(entity.getId());
         return qCustomer.flatMap(qCus -> {
             repository.save(convertToEntity(entity, qCus));
+            return Mono.just(true);
+        }).doOnError(x -> Mono.error(x));
+    }
+
+    @Override
+    public Mono<Boolean> updatePhoto(CustomerUpdatePhotoDto entity, String urlSource) {
+        Mono<Customer> qCustomer = repository.findById(entity.getId());
+        return qCustomer.flatMap(qCus -> {
+            Photo photo = new Photo();
+            photo.setName(entity.getId().toString());
+            photo.setUrl(urlSource);
+            photo.setDate(LocalDateTime.now());
+
+            qCus.setProfilePhoto(Json.of(convertJSONtoString(photo)));
+            repository.save(qCus);
             return Mono.just(true);
         }).doOnError(x -> Mono.error(x));
     }
