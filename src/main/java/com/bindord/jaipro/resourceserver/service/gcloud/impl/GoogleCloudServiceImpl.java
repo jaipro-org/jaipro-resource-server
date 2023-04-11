@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import static com.bindord.jaipro.resourceserver.utils.Constants.CUSTOMER_PHOTO_PATH;
+import static com.bindord.jaipro.resourceserver.utils.Constants.SPECIALIST_GALLERY_PATH;
 import static com.bindord.jaipro.resourceserver.utils.Constants.SPECIALIST_PHOTO_PATH;
 
 @Service
@@ -50,6 +51,17 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
         String path = SPECIALIST_PHOTO_PATH
                             .replace("[ID]", specialistIdStr)
                             .replace("[FILENAME]", specialistIdStr);
+
+        return SaveFile(file, path);
+    }
+
+    @Override
+    public Mono<String> saveSpecialistGallery(byte[] file, UUID specialistId, String fileName) {
+
+        String specialistIdStr = specialistId.toString();
+        String path = SPECIALIST_GALLERY_PATH
+                            .replace("[ID]", specialistIdStr)
+                            .replace("[FILENAME]", fileName);
 
         return SaveFile(file, path);
     }

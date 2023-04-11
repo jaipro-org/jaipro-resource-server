@@ -9,4 +9,5 @@ public interface GoogleCloudService {
     Mono<String> saveCustomerPhoto(byte[] file, UUID customerId);
 
     Mono<String> saveSpecialistPhoto(byte[] file, UUID specialistId);
+    Mono<String> saveSpecialistGallery(byte[] file, UUID specialistId, String fileName);
 }

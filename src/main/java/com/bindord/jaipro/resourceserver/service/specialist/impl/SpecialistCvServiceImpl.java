@@ -117,14 +117,13 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
 
                 for (var file : entity.getFiles()) {
                     byte[] bytes = getBytesToFilePart(file).block();
-                    String path = entity.getSpecialistCvId() + "/gallery/";
-                    String url = googleCloudService.saveFile(bytes, file.filename(), path);
+                    var url = googleCloudService.saveSpecialistGallery(bytes, entity.getSpecialistCvId(), file.filename());
 
                     Photo photo = new Photo();
                     photo.setDate(LocalDateTime.now());
                     photo.setName(file.filename());
                     photo.setSize(0);
-                    photo.setUrl(url);
+                    photo.setUrl(url.block());
 
                     gallery.add(photo);
                 }
