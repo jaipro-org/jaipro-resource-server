@@ -1,8 +1,0 @@
-[INFO ] 2022-11-11 17:43:35.704 [parallel-3] AspectController - CountryController.findAll() method called.
-[INFO ] 2022-11-11 17:44:46.150 [parallel-3] AspectController - CountryController.findAll() method called.
-[INFO ] 2022-11-11 17:46:25.950 [parallel-3] AspectController - CountryController.findAll() method called.
-[INFO ] 2022-11-11 17:53:20.408 [parallel-3] AspectController - CountryController.findAll() method called.
-[INFO ] 2022-11-11 17:53:55.090 [parallel-3] AspectController - CountryController.findAll() method called.
-[INFO ] 2022-11-11 17:55:11.771 [parallel-3] AspectController - CountryController.findAll() method called.
-[INFO ] 2022-11-11 17:56:17.956 [parallel-3] AspectController - CountryController.findAll() method called.
-[INFO ] 2022-11-11 17:57:30.993 [parallel-3] AspectController - CountryController.findAll() method called.

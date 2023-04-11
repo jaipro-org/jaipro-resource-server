@@ -8,6 +8,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.http.codec.multipart.FilePart;
+import reactor.core.publisher.Mono;
 
 import java.beans.FeatureDescriptor;
 import java.io.File;
@@ -78,5 +81,10 @@ public class Utilitarios {
         return array;
     }
 
+    public static byte[] getBytestoFilePart(FilePart file){
+        return DataBufferUtils.join(file.content())
+                .map(dataBuffer -> dataBuffer.asByteBuffer().array())
+                .map(x -> x).block();
+    }
 }
 

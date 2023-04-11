@@ -8,4 +8,7 @@ public class Constants {
     public static final String CUSTOMER_PHOTO_PATH = "jaipro/customers/[ID]/[FILENAME]";
     public static final String SPECIALIST_PHOTO_PATH = "jaipro/specialist/[ID]/[FILENAME]";
     public static final String SPECIALIST_GALLERY_PATH = "jaipro/specialist/[ID]/gallery/[FILENAME]";
+    
+    public static final Integer MAX_GALLERY_FILES = 6;
+
 }
