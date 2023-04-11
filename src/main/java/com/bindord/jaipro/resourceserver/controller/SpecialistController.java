@@ -60,7 +60,7 @@ public class SpecialistController {
             consumes = {MediaType.APPLICATION_JSON_VALUE})
     public Mono<Specialist> update(@Valid @RequestBody SpecialistUpdateDto specialist)
             throws NotFoundValidationException, CustomValidationException {
-        return Mono.zip(specialistService.update(specialist), uploadFile(specialist.getFile(), specialist.getId().toString()))
+        return Mono.zip(specialistService.update(specialist), uploadFile(specialist.getFile(), specialist.getId()))
                 .flatMap(t -> Mono.just(t.getT1()));
     }
 
@@ -88,12 +88,12 @@ public class SpecialistController {
     public Mono<Boolean> existsSpecialistByDocument(@RequestParam String document) throws NotFoundValidationException {
         return specialistService.existsSpecialistByDocument(document);
     }
-    private Mono<String> uploadFile(@RequestPart("file") FilePart file, String specialistId){
+    private Mono<String> uploadFile(@RequestPart("file") FilePart file, UUID specialistId){
         try{
             return DataBufferUtils.join(file.content())
                     .map(dataBuffer -> dataBuffer.asByteBuffer().array())
-                    .map(x -> googleCloudService.saveFile(x, file.filename(), specialistId))
-                    .flatMap(x-> Mono.just(x));
+                    .map(x -> googleCloudService.saveSpecialistPhoto(x, specialistId))
+                    .flatMap(x-> x);
         }catch (Exception ex){
             return Mono.just(ex.getMessage());
         }

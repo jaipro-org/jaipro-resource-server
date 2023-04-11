@@ -1,12 +1,12 @@
 spring:
   profiles:
-    active: gcp-dev
+    active: dev
 
 eureka:
   services:
     eureka-clients:
       keycloak-auth:
-        url: http://localhost:8090/eureka/keycloak-auth/v1
+        url: http://jaipro-keycloak.jaipro.svc.cluster.local:8080/eureka/keycloak-auth/v1
         readTimeout: 7000
         writeTimeout: 1000
         connectionTimeout: 300
