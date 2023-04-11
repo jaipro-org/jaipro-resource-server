@@ -4,6 +4,7 @@ import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
 import com.bindord.jaipro.resourceserver.domain.customer.Customer;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerDto;
+import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerInformationDto;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerInformationUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerLocationUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerPasswordUpdateDto;
@@ -113,13 +114,13 @@ public class CustomerController {
         return customerService.updatePassword(customer);
     }
 
-    /*@ApiResponse(description = "Get customer information",
+    @ApiResponse(description = "Get customer information",
             responseCode = "200")
-    @GetMapping(value = "/{id}",
+    @GetMapping(value = "/{id}/information",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<Customer> GetInformationById(@PathVariable UUID id) throws NotFoundValidationException {
-        return customerService.findOne(id);
-    }*/
+    public Mono<CustomerInformationDto> GetInformationById(@PathVariable UUID id) throws NotFoundValidationException {
+        return customerService.GetInformation(id);
+    }
 
     @ApiResponse(description = "Update a customer photo",
             responseCode = "200")

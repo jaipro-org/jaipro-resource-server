@@ -4,14 +4,17 @@ import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
 import com.bindord.jaipro.resourceserver.domain.customer.Customer;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerDto;
+import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerInformationDto;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerInformationUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerLocationUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerPasswordUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerUpdatePhotoDto;
 import com.bindord.jaipro.resourceserver.domain.json.Photo;
+import com.bindord.jaipro.resourceserver.domain.specialist.json.Experience;
 import com.bindord.jaipro.resourceserver.repository.CustomerRepository;
 import com.bindord.jaipro.resourceserver.service.customer.CustomerService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.r2dbc.postgresql.codec.Json;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -19,11 +22,14 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.convertJSONtoString;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.getNullPropertyNames;
+import static com.bindord.jaipro.resourceserver.utils.Utilitarios.instanceObjectMapper;
 
 @AllArgsConstructor
 @Service
@@ -65,6 +71,19 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Flux<Customer> findAllNative() {
         return repository.findAll();
+    }
+
+    @Override
+    public Mono<CustomerInformationDto> GetInformation(UUID id) {
+        return repository
+                    .findById(id)
+                    .map(qCus -> {
+                        try {
+                            return convertToDto(qCus);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
     }
 
     @Override
@@ -148,5 +167,23 @@ public class CustomerServiceImpl implements CustomerService {
         );
         customer.setNew(true);
         return customer;
+    }
+
+    private CustomerInformationDto convertToDto(Customer customer) throws IOException {
+        CustomerInformationDto customerInformationDto = new CustomerInformationDto();
+        BeanUtils.copyProperties(customer, customerInformationDto, getNullPropertyNames(customer));
+
+        if(customer.getProfilePhoto() != null){
+            Photo photo = convertJsonToClass(customer.getProfilePhoto());
+            customerInformationDto.setAvatar(photo.getUrl());
+        }
+        return customerInformationDto;
+    }
+
+    private Photo convertJsonToClass(Json json) throws IOException {
+        var objectMapper = instanceObjectMapper();
+
+        Photo photo = objectMapper.readValue(json.asString(), new TypeReference<Photo>(){});
+        return photo;
     }
 }

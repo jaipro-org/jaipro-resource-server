@@ -2,6 +2,7 @@ package com.bindord.jaipro.resourceserver.service.customer;
 
 import com.bindord.jaipro.resourceserver.domain.customer.Customer;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerDto;
+import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerInformationDto;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerInformationUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerLocationUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerPasswordUpdateDto;
@@ -18,6 +19,7 @@ import java.util.UUID;
 public interface CustomerService extends BaseService<Customer, UUID, CustomerDto, CustomerUpdateDto> {
 
     Flux<Customer> findAllNative();
+    Mono<CustomerInformationDto> GetInformation(UUID id);
 
     Mono<Customer> updateAbout(CustomerInformationUpdateDto entity);
     Mono<Boolean> updateLocation(CustomerLocationUpdateDto entity);
