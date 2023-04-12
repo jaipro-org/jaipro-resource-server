@@ -86,7 +86,7 @@ public class SpecialistSpecializationController {
 
     @ApiResponse(description = "FindAll by SpecialistId",
             responseCode = "200")
-    @GetMapping(value = "/{id}",
+    @GetMapping(value = "/list/{id}",
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public Flux<SpecialistSpecialization> findAllBySpecialistId(@PathVariable UUID id) throws NotFoundValidationException {
         return specialistSpecializationService.findAllBySpecialistId(id);
