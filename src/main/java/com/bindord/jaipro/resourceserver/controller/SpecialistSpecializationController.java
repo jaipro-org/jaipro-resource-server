@@ -61,19 +61,9 @@ public class SpecialistSpecializationController {
     @PutMapping(value = "",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<SpecialistSpecialization> update(@Valid @RequestBody SpecialistSpecializationDto specialistSpecialization)
+    public Mono<SpecialistSpecialization> update(@Valid @RequestBody SpecialistSpecializationUpdateDto specialistSpecialization)
             throws NotFoundValidationException, CustomValidationException {
         return specialistSpecializationService.update(specialistSpecialization);
-    }
-
-    @ApiResponse(description = "Update a specialistSpecialization",
-            responseCode = "200")
-    @PutMapping(value = "update-experience",
-            produces = {MediaType.APPLICATION_JSON_VALUE},
-            consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<Boolean> updateExperience(@Valid @RequestBody SpecialistSpecializationUpdateDto specialistSpecialization)
-            throws NotFoundValidationException, CustomValidationException {
-        return specialistSpecializationService.UpdateExperience(specialistSpecialization);
     }
 
     @ApiResponse(description = "List specialistSpecializations",

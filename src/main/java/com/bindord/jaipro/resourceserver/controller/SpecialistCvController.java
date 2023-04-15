@@ -8,13 +8,13 @@ import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistExperienceUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistGalleryUpdateDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.json.Experience;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecialistCvService;
 import com.bindord.jaipro.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -66,7 +66,6 @@ public class SpecialistCvController {
         return specialistCvService.findAll();
     }
 
-    @PreAuthorize("hasRole('UMA_AUTHORIZATION')")
     @ApiResponse(description = "Find by id",
             responseCode = "200")
     @GetMapping(value = "/{id}",
@@ -75,23 +74,33 @@ public class SpecialistCvController {
         return specialistCvService.findOne(id);
     }
 
-    @ApiResponse(description = "Update a experience specialist cv",
+    @ApiResponse(description = "Update an experience of specialist cv",
             responseCode = "200")
-    @PutMapping(value = "experience",
+    @PutMapping(value = "/{id}/experience",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<Boolean> updateExperience(@Valid @RequestBody SpecialistExperienceUpdateDto specialistExperience)
+    public Mono<Void> updateExperience(@PathVariable UUID id, @Valid @RequestBody SpecialistExperienceUpdateDto specialistExperience)
             throws NotFoundValidationException, CustomValidationException {
-        return specialistCvService.updateExperience(specialistExperience);
+        return specialistCvService.updateExperience(id, specialistExperience);
+    }
+
+    @ApiResponse(description = "Persist an experience of specialist cv",
+            responseCode = "200")
+    @PostMapping(value = "/{id}/experience",
+            produces = {MediaType.APPLICATION_JSON_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public Mono<Experience> persistExperience(@PathVariable UUID id, @Valid @RequestBody Experience experience)
+            throws NotFoundValidationException, CustomValidationException {
+        return specialistCvService.saveExperience(id, experience);
     }
 
     @ApiResponse(description = "Update gallery to specialist cv",
             responseCode = "200")
-    @PutMapping(value = "gallery",
+    @PutMapping(value = "/gallery",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
     public Flux<Photo> updateGallery(@Valid @RequestBody SpecialistGalleryUpdateDto specialistGallery)
-            throws NotFoundValidationException{
+            throws NotFoundValidationException {
         return specialistCvService.updateGallery(specialistGallery);
     }
 }

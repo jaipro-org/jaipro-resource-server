@@ -72,7 +72,6 @@ public class SpecialistController {
         return specialistService.findAll();
     }
 
-    @PreAuthorize("hasRole('UMA_AUTHORIZATION')")
     @ApiResponse(description = "Find by id",
             responseCode = "200")
     @GetMapping(value = "/{id}",

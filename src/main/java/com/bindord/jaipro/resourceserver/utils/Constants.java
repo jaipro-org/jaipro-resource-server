@@ -11,4 +11,7 @@ public class Constants {
     
     public static final Integer MAX_GALLERY_FILES = 6;
 
+    //Errors message
+    public static final String ERROR_EXPERIENCE_REPEATED = "Profesion ya registrada como experiencia";
+
 }

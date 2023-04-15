@@ -65,7 +65,6 @@ public class UserInfoServiceImpl implements UserInfoService {
     @SneakyThrows
     private UserInfo convertToEntity(UserInfoUpdateDto obj, UserInfo userInfo) {
         BeanUtils.copyProperties(obj, userInfo, getNullPropertyNames(obj));
-        var objMapper = instanceObjectMapper();
         return userInfo;
     }
 
