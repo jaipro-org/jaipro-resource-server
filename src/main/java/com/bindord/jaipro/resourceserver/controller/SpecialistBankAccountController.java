@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,5 +64,12 @@ public class SpecialistBankAccountController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public Mono<SpecialistBankAccount> findOne(@PathVariable UUID id) throws NotFoundValidationException {
         return specialistBankAccountService.findOne(id);
+    }
+
+    @ApiResponse(description = "Delete banks account", responseCode = "200")
+    @DeleteMapping(value = "/{id}",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public Mono<Boolean> deleteBankAccount(@PathVariable UUID id) {
+        return specialistBankAccountService.deleteBankAccount(id);
     }
 }

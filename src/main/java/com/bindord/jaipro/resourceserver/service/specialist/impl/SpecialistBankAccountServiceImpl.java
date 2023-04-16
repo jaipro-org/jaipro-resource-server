@@ -56,6 +56,17 @@ public class SpecialistBankAccountServiceImpl implements SpecialistBankAccountSe
         return repository.findAllBySpecialistId(specialistId);
     }
 
+    @Override
+    public Mono<Boolean> deleteBankAccount(UUID specialistBankAccountId) {
+        return repository.findById(specialistBankAccountId)
+                        .map(qba -> {
+                            if(qba.isPreferred()) return false;
+
+                            repository.deleteById(specialistBankAccountId);
+                            return true;
+                        });
+    }
+
     private SpecialistBankAccount convertToEntityForNewCase(SpecialistBankAccountDto obj){
         var specialistBankAccount = new SpecialistBankAccount();
         BeanUtils.copyProperties(obj, specialistBankAccount);
