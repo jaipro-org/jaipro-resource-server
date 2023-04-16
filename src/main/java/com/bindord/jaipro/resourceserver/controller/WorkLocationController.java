@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -81,4 +82,11 @@ public class WorkLocationController {
         return workLocationService.findAllBySpecialistId(id);
     }
 
+    @ApiResponse(description = "delete work location by id",
+            responseCode = "200")
+    @DeleteMapping(value = "/{specialistId}/{districtId}",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public Mono<Boolean> deleteBySpecialistId(@PathVariable UUID specialistId, @PathVariable int districtId) throws NotFoundValidationException {
+        return workLocationService.deleteWorkLocationBySpecialistId(specialistId, districtId);
+    }
 }
