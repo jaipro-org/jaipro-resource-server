@@ -155,6 +155,18 @@ public class ExceptionControllerAdvice {
         LOGGER.warn("method {}", "handleServerWebInputException");
         return Mono.just(new ApiError(ex.getMessage(), ex));
     }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(CustomValidationException.class)
+    public @ResponseBody
+    Mono<ErrorResponse> handlerCustomValidationException(CustomValidationException ex) {
+        LOGGER.warn("method {}", "handlerCustomValidationException");
+        LOGGER.warn(ex.getMessage());
+        for (int i = 0; i < ex.getStackTrace().length; i++) {
+            LOGGER.warn(ex.getStackTrace()[i].toString());
+        }
+        return Mono.just(new ErrorResponse(ex.getMessage(), ex.getInternalCode()));
+    }
 }
 
 

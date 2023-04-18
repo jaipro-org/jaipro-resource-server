@@ -30,7 +30,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static com.bindord.jaipro.resourceserver.utils.Constants.ERROR_EXPERIENCE_REPEATED;
 import static com.bindord.jaipro.resourceserver.utils.Constants.MAX_GALLERY_FILES;
+import static com.bindord.jaipro.resourceserver.utils.Utilitarios.convertJSONtoString;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.getNullPropertyNames;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.instanceObjectMapper;
 import static java.util.Objects.isNull;
@@ -86,22 +88,32 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     }
 
     @Override
-    public Mono<Boolean> updateExperience(SpecialistExperienceUpdateDto entity) {
-        Mono<SpecialistCv> qSpecialistCv = repository.findById(entity.getSpecialistCvId());
-        return qSpecialistCv.map(qScv -> {
-            try {
-                var experiences = convertJsonToClass(qScv.getExperienceTimes());
-                var experience = experiences.get(entity.getIndex());
-                experience.setTime(entity.getTime());
-                experiences.set(entity.getIndex(), experience);
+    public Mono<Void> updateExperience(UUID id, SpecialistExperienceUpdateDto entity) {
+        Mono<SpecialistCv> qSpecialistCv = repository.findById(id);
+        return qSpecialistCv.flatMap(qScv -> {
+            var experiences = convertJsonToClass(qScv.getExperienceTimes());
+            var experience = experiences.get(entity.getIndex());
+            experience.setTime(entity.getTime());
+            experiences.set(entity.getIndex(), experience);
 
-                var objMapper = instanceObjectMapper();
-                qScv.setExperienceTimes(Json.of(objMapper.writeValueAsString(experiences)));
-                repository.save(qScv);
-                return true;
-            } catch (IOException e) {
-                return false;
+            qScv.setExperienceTimes(Json.of(convertJSONtoString(experiences)));
+            return repository.save(qScv);
+        }).then(Mono.empty());
+    }
+
+    @Override
+    public Mono<Experience> saveExperience(UUID id, Experience experience) {
+        Mono<SpecialistCv> qSpecialistCv = repository.findById(id);
+        return qSpecialistCv.flatMap(qScv -> {
+            var experiences = convertJsonToClass(qScv.getExperienceTimes());
+            if (experiences.stream().anyMatch(exp -> exp.getProfessionId().equals(experience.getProfessionId()))) {
+                return Mono.error(new CustomValidationException(ERROR_EXPERIENCE_REPEATED));
             }
+            experience.setDate(LocalDateTime.now());
+            experiences.add(experience);
+
+            qScv.setExperienceTimes(Json.of(convertJSONtoString(experiences)));
+            return repository.save(qScv).then(Mono.just(experience));
         });
     }
 
@@ -152,7 +164,8 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
                 });
     }
 
-    private List<Experience> convertJsonToClass(Json json) throws IOException {
+    @SneakyThrows
+    private List<Experience> convertJsonToClass(Json json) {
         var objectMapper = instanceObjectMapper();
 
         List<Experience> participantJsonList = objectMapper.readValue(json.asString(), new TypeReference<List<Experience>>() {
@@ -197,6 +210,8 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     }
 
     private SpecialistCv convertToEntityForNewCase(SpecialistCvDto obj) {
+        obj.getExperienceTimes().forEach(exp -> exp.setDate(LocalDateTime.now()));
+
         var specialistCv = new SpecialistCv();
         BeanUtils.copyProperties(obj, specialistCv);
         serializeJsonColumns(specialistCv, obj);

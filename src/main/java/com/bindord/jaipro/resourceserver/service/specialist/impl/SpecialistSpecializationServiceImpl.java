@@ -31,7 +31,7 @@ public class SpecialistSpecializationServiceImpl implements SpecialistSpecializa
     }
 
     @Override
-    public Mono<SpecialistSpecialization> update(SpecialistSpecializationDto entity) throws NotFoundValidationException, CustomValidationException {
+    public Mono<SpecialistSpecialization> update(SpecialistSpecializationUpdateDto entity) throws NotFoundValidationException, CustomValidationException {
         Mono<SpecialistSpecialization> qSpecialistSpecialization = repository.findById(entity.getSpecialistId());
         return qSpecialistSpecialization.flatMap(qCus -> repository.save(convertToEntity(entity, qCus)));
     }
@@ -73,27 +73,12 @@ public class SpecialistSpecializationServiceImpl implements SpecialistSpecializa
     }
 
     @Override
-    public Mono<Boolean> UpdateExperience(SpecialistSpecializationUpdateDto entity) {
-        Flux<SpecialistSpecialization> qSpecialistSpecialization = repository.findAllByProfessionId(entity.getProfessionId());
-        return qSpecialistSpecialization.map(x -> {
-           if(!entity.getListSpecialitiesIds().contains(x.getSpecializationId())){
-               SpecialistSpecialization specialistSpecialization = new SpecialistSpecialization();
-               specialistSpecialization.setSpecialistId(x.getSpecialistId());
-               specialistSpecialization.setProfessionId(x.getProfessionId());
-
-               repository.save(specialistSpecialization);
-           }
-            return null;
-        }).then(Mono.just(true));
-    }
-
-    @Override
     public Flux<SpecialistSpecialization> findAllNative() {
         return repository.findAll();
     }
 
 
-    private SpecialistSpecialization convertToEntity(SpecialistSpecializationDto obj, SpecialistSpecialization workLocation) {
+    private SpecialistSpecialization convertToEntity(SpecialistSpecializationUpdateDto obj, SpecialistSpecialization workLocation) {
         BeanUtils.copyProperties(obj, workLocation, getNullPropertyNames(obj));
         return workLocation;
     }
