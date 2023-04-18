@@ -97,8 +97,8 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
             experiences.set(entity.getIndex(), experience);
 
             qScv.setExperienceTimes(Json.of(convertJSONtoString(experiences)));
-            return repository.save(qScv).then(Mono.empty());
-        });
+            return repository.save(qScv);
+        }).then(Mono.empty());
     }
 
     @Override
