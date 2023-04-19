@@ -4,6 +4,7 @@ import com.bindord.jaipro.resourceserver.domain.specialist.WorkLocation;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.WorkLocationDto;
 import com.bindord.jaipro.resourceserver.generic.BaseService;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
@@ -14,4 +15,6 @@ public interface WorkLocationService extends BaseService<WorkLocation, UUID, Wor
     Flux<WorkLocation> findAllBySpecialistId(UUID id);
 
     Flux<WorkLocation> saveAll(Iterable<WorkLocation> workLocations);
+
+    Mono<Void> deleteWorkLocationBySpecialistId(UUID specialistId, int districtId);
 }

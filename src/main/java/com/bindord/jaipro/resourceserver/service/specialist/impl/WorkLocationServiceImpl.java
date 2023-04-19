@@ -72,6 +72,13 @@ public class WorkLocationServiceImpl implements WorkLocationService {
     }
 
     @Override
+    public Mono<Void> deleteWorkLocationBySpecialistId(UUID specialistId, int districtId) {
+        return repository
+                .deleteBySpecialistIdAndDistrictId(specialistId, districtId)
+                .then(Mono.empty());
+    }
+
+    @Override
     public Flux<WorkLocation> findAllNative() {
         return repository.findAll();
     }
