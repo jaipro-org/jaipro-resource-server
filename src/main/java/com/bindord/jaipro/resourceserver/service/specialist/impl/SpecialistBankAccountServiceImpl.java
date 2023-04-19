@@ -11,6 +11,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import static com.bindord.jaipro.resourceserver.utils.Constants.ERROR_BANK_ACCOUNT_REMOVED_PREFERED;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.getNullPropertyNames;
 import java.util.UUID;
 
@@ -54,6 +56,17 @@ public class SpecialistBankAccountServiceImpl implements SpecialistBankAccountSe
     @Override
     public Flux<SpecialistBankAccount> findAllBySpecialistId(UUID specialistId) {
         return repository.findAllBySpecialistId(specialistId);
+    }
+
+    @Override
+    public Mono<Void> deleteBankAccount(UUID specialistBankAccountId) {
+        return repository.findById(specialistBankAccountId)
+                        .flatMap(qba -> {
+                            if(qba.isPreferred())
+                                return Mono.error(new CustomValidationException(ERROR_BANK_ACCOUNT_REMOVED_PREFERED));
+
+                            return repository.deleteById(specialistBankAccountId);
+                        }).then(Mono.empty());
     }
 
     private SpecialistBankAccount convertToEntityForNewCase(SpecialistBankAccountDto obj){
