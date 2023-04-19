@@ -16,5 +16,5 @@ public interface WorkLocationService extends BaseService<WorkLocation, UUID, Wor
 
     Flux<WorkLocation> saveAll(Iterable<WorkLocation> workLocations);
 
-    Mono<Boolean> deleteWorkLocationBySpecialistId(UUID specialistId, int districtId);
+    Mono<Void> deleteWorkLocationBySpecialistId(UUID specialistId, int districtId);
 }

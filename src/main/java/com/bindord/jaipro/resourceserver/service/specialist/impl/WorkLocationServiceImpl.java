@@ -72,10 +72,10 @@ public class WorkLocationServiceImpl implements WorkLocationService {
     }
 
     @Override
-    public Mono<Boolean> deleteWorkLocationBySpecialistId(UUID specialistId, int districtId) {
+    public Mono<Void> deleteWorkLocationBySpecialistId(UUID specialistId, int districtId) {
         return repository
                 .deleteBySpecialistIdAndDistrictId(specialistId, districtId)
-                .then(Mono.just(true));
+                .then(Mono.empty());
     }
 
     @Override

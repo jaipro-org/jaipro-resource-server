@@ -86,7 +86,7 @@ public class WorkLocationController {
             responseCode = "200")
     @DeleteMapping(value = "/{specialistId}/{districtId}",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<Boolean> deleteBySpecialistId(@PathVariable UUID specialistId, @PathVariable int districtId) throws NotFoundValidationException {
+    public Mono<Void> deleteBySpecialistId(@PathVariable UUID specialistId, @PathVariable int districtId) throws NotFoundValidationException {
         return workLocationService.deleteWorkLocationBySpecialistId(specialistId, districtId);
     }
 }
