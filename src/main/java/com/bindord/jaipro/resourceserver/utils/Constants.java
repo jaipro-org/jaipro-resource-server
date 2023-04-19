@@ -13,5 +13,5 @@ public class Constants {
 
     //Errors message
     public static final String ERROR_EXPERIENCE_REPEATED = "Profesion ya registrada como experiencia";
-
+    public static final String ERROR_BANK_ACCOUNT_REMOVED_PREFERED = "No se puede eliminar una cuenta bancaria preferida";
 }

@@ -69,7 +69,7 @@ public class SpecialistBankAccountController {
     @ApiResponse(description = "Delete banks account", responseCode = "200")
     @DeleteMapping(value = "/{id}",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<Boolean> deleteBankAccount(@PathVariable UUID id) {
+    public Mono<Void> deleteBankAccount(@PathVariable UUID id) {
         return specialistBankAccountService.deleteBankAccount(id);
     }
 }

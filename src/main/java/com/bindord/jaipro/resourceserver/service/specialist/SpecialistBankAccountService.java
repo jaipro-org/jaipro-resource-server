@@ -12,6 +12,6 @@ public interface SpecialistBankAccountService extends BaseService<SpecialistBank
 
     Flux<SpecialistBankAccount> findAllBySpecialistId(UUID specialistId);
 
-    Mono<Boolean> deleteBankAccount(UUID specialistId);
+    Mono<Void> deleteBankAccount(UUID specialistId);
 
 }
