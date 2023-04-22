@@ -6,7 +6,7 @@ import lombok.Setter;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.UUID;
 
@@ -14,7 +14,7 @@ import java.util.UUID;
 @Getter
 public class CustomerLocationUpdateDto {
 
-    @NotBlank
+    @NotNull
     @Valid
     private UUID id;
 
