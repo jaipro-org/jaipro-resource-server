@@ -31,6 +31,4 @@ public class CustomerInformationUpdateDto {
 
     @Size(min = 9, max = 15)
     private String phone;
-
-    private Photo profilePhoto;
 }
