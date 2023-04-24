@@ -1,11 +1,11 @@
-package com.bindord.jaipro.resourceserver.configuration.controller;
+package com.bindord.jaipro.resourceserver.controller;
 
 import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
-import com.bindord.jaipro.resourceserver.domain.country.District;
-import com.bindord.jaipro.resourceserver.domain.country.dto.DistrictDto;
-import com.bindord.jaipro.resourceserver.domain.country.dto.DistrictUpdateDto;
-import com.bindord.jaipro.resourceserver.service.country.DistrictService;
+import com.bindord.jaipro.resourceserver.domain.specialist.Specialization;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecializationDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecializationUpdateDto;
+import com.bindord.jaipro.resourceserver.service.specialist.SpecializationService;
 import com.bindord.jaipro.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
@@ -25,39 +25,39 @@ import javax.validation.Valid;
 @AllArgsConstructor
 @Slf4j
 @RestController
-@RequestMapping("${service.ingress.context-path}/district")
-public class DistrictController {
+@RequestMapping("${service.ingress.context-path}/specialization")
+public class SpecializationController {
 
     private final Validator validator;
 
-    private final DistrictService districtService;
+    private final SpecializationService specializationService;
 
-    @ApiResponse(description = "Persist a district",
+    @ApiResponse(description = "Persist a specialization",
             responseCode = "200")
     @PostMapping(value = "",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<District> save(@Valid @RequestBody DistrictDto district)
+    public Mono<Specialization> save(@Valid @RequestBody SpecializationDto specialization)
             throws NotFoundValidationException, CustomValidationException {
-        return districtService.save(district);
+        return specializationService.save(specialization);
     }
 
-    @ApiResponse(description = "Update a district",
+    @ApiResponse(description = "Update a specialization",
             responseCode = "200")
     @PutMapping(value = "",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<District> update(@Valid @RequestBody DistrictUpdateDto district)
+    public Mono<Specialization> update(@Valid @RequestBody SpecializationUpdateDto specialization)
             throws NotFoundValidationException, CustomValidationException {
-        return districtService.update(district);
+        return specializationService.update(specialization);
     }
 
-    @ApiResponse(description = "List districts",
+    @ApiResponse(description = "List specializations",
             responseCode = "200")
     @GetMapping(value = "",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Flux<District> findAll() {
-        return districtService.findAll();
+    public Flux<Specialization> findAll() {
+        return specializationService.findAll();
     }
 
 }
