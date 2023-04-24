@@ -1,4 +1,4 @@
-package com.bindord.jaipro.resourceserver.controller;
+package com.bindord.jaipro.resourceserver.configuration.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,4 +1,4 @@
-package com.bindord.jaipro.resourceserver.controller;
+package com.bindord.jaipro.resourceserver.configuration.controller;
 
 import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;

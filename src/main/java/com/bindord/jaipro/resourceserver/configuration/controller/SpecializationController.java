@@ -1,18 +1,17 @@
-package com.bindord.jaipro.resourceserver.controller;
+package com.bindord.jaipro.resourceserver.configuration.controller;
 
 import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
-import com.bindord.jaipro.resourceserver.domain.user.UserInfo;
-import com.bindord.jaipro.resourceserver.domain.user.dto.UserInfoDto;
-import com.bindord.jaipro.resourceserver.domain.user.dto.UserInfoUpdateDto;
-import com.bindord.jaipro.resourceserver.service.user.UserInfoService;
+import com.bindord.jaipro.resourceserver.domain.specialist.Specialization;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecializationDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecializationUpdateDto;
+import com.bindord.jaipro.resourceserver.service.specialist.SpecializationService;
 import com.bindord.jaipro.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,51 +21,43 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
-import java.util.UUID;
 
 @AllArgsConstructor
 @Slf4j
 @RestController
-@RequestMapping("${service.ingress.context-path}/user-info")
-public class UserInfoController {
+@RequestMapping("${service.ingress.context-path}/specialization")
+public class SpecializationController {
 
     private final Validator validator;
 
-    private final UserInfoService userInfoService;
+    private final SpecializationService specializationService;
 
-    @ApiResponse(description = "Persist an user info",
+    @ApiResponse(description = "Persist a specialization",
             responseCode = "200")
     @PostMapping(value = "",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<UserInfo> save(@Valid @RequestBody UserInfoDto userInfo)
+    public Mono<Specialization> save(@Valid @RequestBody SpecializationDto specialization)
             throws NotFoundValidationException, CustomValidationException {
-        return userInfoService.save(userInfo);
+        return specializationService.save(specialization);
     }
 
-    @ApiResponse(description = "Update an user info",
+    @ApiResponse(description = "Update a specialization",
             responseCode = "200")
     @PutMapping(value = "",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<UserInfo> update(@Valid @RequestBody UserInfoUpdateDto userInfo)
+    public Mono<Specialization> update(@Valid @RequestBody SpecializationUpdateDto specialization)
             throws NotFoundValidationException, CustomValidationException {
-        return userInfoService.update(userInfo);
+        return specializationService.update(specialization);
     }
 
-    @ApiResponse(description = "List users info",
+    @ApiResponse(description = "List specializations",
             responseCode = "200")
     @GetMapping(value = "",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Flux<UserInfo> findAll() {
-        return userInfoService.findAll();
+    public Flux<Specialization> findAll() {
+        return specializationService.findAll();
     }
 
-    @ApiResponse(description = "Find by id",
-            responseCode = "200")
-    @GetMapping(value = "/{id}",
-            produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<UserInfo> findById(@PathVariable UUID id) throws NotFoundValidationException {
-        return userInfoService.findOne(id);
-    }
 }

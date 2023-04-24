@@ -16,6 +16,7 @@ import com.bindord.jaipro.resourceserver.service.customer.CustomerService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.r2dbc.postgresql.codec.Json;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -76,59 +77,46 @@ public class CustomerServiceImpl implements CustomerService {
     public Mono<CustomerInformationDto> GetInformation(UUID id) {
         return repository
                 .findById(id)
-                .map(qCus -> {
-                    try {
-                        return convertToDto(qCus);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+                .map(qCus -> convertToDto(qCus));
     }
 
     @Override
     public Mono<Customer> updateAbout(CustomerInformationUpdateDto entity) {
         Mono<Customer> qCustomer = repository.findById(entity.getId());
-        return qCustomer.flatMap(qCus -> {
-            repository.save(convertToEntity(entity, qCus));
-            return Mono.just(qCus);
-        }).doOnError(x -> Mono.error(x));
+        return qCustomer
+                    .flatMap(qCus -> repository.save(convertToEntity(entity, qCus)))
+                    .map(cus -> cus);
     }
 
     @Override
-    public Mono<Boolean> updateLocation(CustomerLocationUpdateDto entity) {
+    public Mono<Void> updateLocation(CustomerLocationUpdateDto entity) {
         Mono<Customer> qCustomer = repository.findById(entity.getId());
-        return qCustomer.flatMap(qCus -> {
-            repository.save(convertToEntity(entity, qCus));
-            return Mono.just(true);
-        }).doOnError(x -> Mono.error(x));
+        return qCustomer
+                    .flatMap(qCus -> repository.save(convertToEntity(entity, qCus)))
+                    .then(Mono.empty());
     }
 
     @Override
-    public Mono<Boolean> updatePhoto(CustomerUpdatePhotoDto entity, String urlSource) {
+    public Mono<Void> updatePhoto(CustomerUpdatePhotoDto entity, String urlSource) {
         Mono<Customer> qCustomer = repository.findById(entity.getId());
-        return qCustomer.flatMap(qCus -> {
-            Photo photo = new Photo();
-            photo.setName(entity.getId().toString());
-            photo.setUrl(urlSource);
-            photo.setDate(LocalDateTime.now());
+        return qCustomer
+                    .flatMap(qCus -> {
+                                        Photo photo = new Photo();
+                                        photo.setName(entity.getId().toString());
+                                        photo.setUrl(urlSource);
+                                        photo.setDate(LocalDateTime.now());
 
-            qCus.setProfilePhoto(Json.of(convertJSONtoString(photo)));
-            repository.save(qCus);
-            return Mono.just(true);
-        }).doOnError(x -> Mono.error(x));
+                                        qCus.setProfilePhoto(Json.of(convertJSONtoString(photo)));
+                                        return repository.save(qCus);
+                    }).then(Mono.empty());
     }
 
     @Override
-    public Mono<Boolean> updatePassword(CustomerPasswordUpdateDto entity) {
+    public Mono<Void> updatePassword(CustomerPasswordUpdateDto entity) {
         Mono<Customer> qCustomer = repository.findById(entity.getId());
-        return qCustomer.flatMap(qCus -> {
-            try {
-                repository.save(qCus);
-                return Mono.just(true);
-            } catch (Exception ex) {
-                return Mono.just(false);
-            }
-        });
+        return qCustomer
+                    .flatMap(qCus -> repository.save(qCus))
+                    .then(Mono.empty());
     }
 
 
@@ -166,7 +154,8 @@ public class CustomerServiceImpl implements CustomerService {
         return customer;
     }
 
-    private CustomerInformationDto convertToDto(Customer customer) throws IOException {
+    @SneakyThrows
+    private CustomerInformationDto convertToDto(Customer customer) {
         CustomerInformationDto customerInformationDto = new CustomerInformationDto();
         BeanUtils.copyProperties(customer, customerInformationDto, getNullPropertyNames(customer));
 

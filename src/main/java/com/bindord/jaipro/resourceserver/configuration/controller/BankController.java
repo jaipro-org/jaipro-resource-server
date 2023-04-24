@@ -1,17 +1,19 @@
-package com.bindord.jaipro.resourceserver.controller;
+package com.bindord.jaipro.resourceserver.configuration.controller;
 
 import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
-import com.bindord.jaipro.resourceserver.domain.country.District;
-import com.bindord.jaipro.resourceserver.domain.country.dto.DistrictDto;
-import com.bindord.jaipro.resourceserver.domain.country.dto.DistrictUpdateDto;
-import com.bindord.jaipro.resourceserver.service.country.DistrictService;
+import com.bindord.jaipro.resourceserver.domain.bank.Bank;
+import com.bindord.jaipro.resourceserver.domain.bank.dto.BankDto;
+import com.bindord.jaipro.resourceserver.domain.bank.dto.BankUpdateDto;
+import com.bindord.jaipro.resourceserver.service.bank.BankService;
 import com.bindord.jaipro.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,43 +23,43 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import java.util.UUID;
 
 @AllArgsConstructor
 @Slf4j
 @RestController
-@RequestMapping("${service.ingress.context-path}/district")
-public class DistrictController {
+@RequestMapping("${service.ingress.context-path}/bank")
+public class BankController {
 
     private final Validator validator;
 
-    private final DistrictService districtService;
+    private final BankService bankService;
 
-    @ApiResponse(description = "Persist a district",
+    @ApiResponse(description = "Persist a bank",
             responseCode = "200")
     @PostMapping(value = "",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<District> save(@Valid @RequestBody DistrictDto district)
+    public Mono<Bank> save(@Valid @RequestBody BankDto bank)
             throws NotFoundValidationException, CustomValidationException {
-        return districtService.save(district);
+        return bankService.save(bank);
     }
 
-    @ApiResponse(description = "Update a district",
+    @ApiResponse(description = "Update a bank",
             responseCode = "200")
     @PutMapping(value = "",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<District> update(@Valid @RequestBody DistrictUpdateDto district)
+    public Mono<Bank> update(@Valid @RequestBody BankUpdateDto bank)
             throws NotFoundValidationException, CustomValidationException {
-        return districtService.update(district);
+        return bankService.update(bank);
     }
 
-    @ApiResponse(description = "List districts",
+    @ApiResponse(description = "List banks",
             responseCode = "200")
     @GetMapping(value = "",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Flux<District> findAll() {
-        return districtService.findAll();
+    public Flux<Bank> findAll() {
+        return bankService.findAll();
     }
-
 }

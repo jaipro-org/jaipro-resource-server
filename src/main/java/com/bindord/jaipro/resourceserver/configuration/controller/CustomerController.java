@@ -1,4 +1,4 @@
-package com.bindord.jaipro.resourceserver.controller;
+package com.bindord.jaipro.resourceserver.configuration.controller;
 
 import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
@@ -99,7 +99,7 @@ public class CustomerController {
     @PutMapping(value = "/updateLocation",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<Boolean> updateLocation(@Valid @RequestBody CustomerLocationUpdateDto customer)
+    public Mono<Void> updateLocation(@Valid @RequestBody CustomerLocationUpdateDto customer)
             throws NotFoundValidationException, CustomValidationException {
         return customerService.updateLocation(customer);
     }
@@ -109,7 +109,7 @@ public class CustomerController {
     @PutMapping(value = "/updatePassword",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<Boolean> updatePassword(@Valid @RequestBody CustomerPasswordUpdateDto customer)
+    public Mono<Void> updatePassword(@Valid @RequestBody CustomerPasswordUpdateDto customer)
             throws NotFoundValidationException, CustomValidationException {
         return customerService.updatePassword(customer);
     }
