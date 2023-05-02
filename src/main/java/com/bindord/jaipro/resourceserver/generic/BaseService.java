@@ -13,7 +13,7 @@ public interface BaseService<T, V, X, Y> {
 
     Mono<T> findOne(V id) throws NotFoundValidationException;
 
-    void delete(V id);
+    Mono<Void> delete(V id);
 
     Mono<Void> delete();
 

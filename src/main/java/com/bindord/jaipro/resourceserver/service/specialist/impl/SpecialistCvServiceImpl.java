@@ -35,6 +35,7 @@ import static com.bindord.jaipro.resourceserver.utils.Constants.MAX_GALLERY_FILE
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.convertJSONtoString;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.getNullPropertyNames;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.instanceObjectMapper;
+import static java.time.LocalDateTime.now;
 import static java.util.Objects.isNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -68,8 +69,8 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     }
 
     @Override
-    public void delete(UUID id) {
-        repository.deleteById(id);
+    public Mono<Void> delete(UUID id) {
+        return repository.deleteById(id);
     }
 
     @Override
@@ -109,7 +110,7 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
             if (experiences.stream().anyMatch(exp -> exp.getProfessionId().equals(experience.getProfessionId()))) {
                 return Mono.error(new CustomValidationException(ERROR_EXPERIENCE_REPEATED));
             }
-            experience.setDate(LocalDateTime.now());
+            experience.setDate(now());
             experiences.add(experience);
 
             qScv.setExperienceTimes(Json.of(convertJSONtoString(experiences)));
@@ -132,7 +133,7 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
                     var url = googleCloudService.saveSpecialistGallery(bytes, entity.getSpecialistCvId(), file.filename());
 
                     Photo photo = new Photo();
-                    photo.setDate(LocalDateTime.now());
+                    photo.setDate(now());
                     photo.setName(file.filename());
                     photo.setSize(0);
                     photo.setUrl(url.block());
@@ -210,7 +211,7 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     }
 
     private SpecialistCv convertToEntityForNewCase(SpecialistCvDto obj) {
-        obj.getExperienceTimes().forEach(exp -> exp.setDate(LocalDateTime.now()));
+        obj.getExperienceTimes().forEach(exp -> exp.setDate(now()));
 
         var specialistCv = new SpecialistCv();
         BeanUtils.copyProperties(obj, specialistCv);

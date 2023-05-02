@@ -29,6 +29,7 @@ import java.util.UUID;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.convertJSONtoString;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.getNullPropertyNames;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.instanceObjectMapper;
+import static java.time.LocalDateTime.now;
 import static java.util.Objects.isNull;
 
 @AllArgsConstructor
@@ -54,8 +55,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void delete(UUID id) {
-        repository.deleteById(id);
+    public Mono<Void> delete(UUID id) {
+        return repository.deleteById(id);
     }
 
     @Override
@@ -104,7 +105,7 @@ public class CustomerServiceImpl implements CustomerService {
                                         Photo photo = new Photo();
                                         photo.setName(entity.getId().toString());
                                         photo.setUrl(urlSource);
-                                        photo.setDate(LocalDateTime.now());
+                                        photo.setDate(now());
 
                                         qCus.setProfilePhoto(Json.of(convertJSONtoString(photo)));
                                         return repository.save(qCus);
