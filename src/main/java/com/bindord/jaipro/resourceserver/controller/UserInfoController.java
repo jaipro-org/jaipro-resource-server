@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -68,5 +69,13 @@ public class UserInfoController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public Mono<UserInfo> findById(@PathVariable UUID id) throws NotFoundValidationException {
         return userInfoService.findOne(id);
+    }
+
+    @ApiResponse(description = "Find by email",
+            responseCode = "200")
+    @GetMapping(value = "/query",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public Mono<UserInfo> findByEmail(@RequestParam String email) {
+        return userInfoService.findByEmail(email);
     }
 }

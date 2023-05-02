@@ -47,8 +47,8 @@ public class SpecialistSpecializationServiceImpl implements SpecialistSpecializa
     }
 
     @Override
-    public void delete(UUID id) {
-        repository.deleteById(id);
+    public Mono<Void> delete(UUID id) {
+        return repository.deleteById(id);
     }
 
     @Override

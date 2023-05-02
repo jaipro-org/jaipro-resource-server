@@ -1,7 +1,6 @@
 package com.bindord.jaipro.resourceserver.domain.user;
 
 import com.bindord.jaipro.resourceserver.domain.base.BaseDomain;
-import com.bindord.jaipro.resourceserver.validation.ExtendedEmailValidator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,46 +10,43 @@ import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Table
 @Setter
 @Getter
-public class UserInfo extends BaseDomain implements Persistable<UUID> {
+public class UserRecover extends BaseDomain implements Persistable<UUID> {
 
     @Id
-    @Column(value = "user_info_id")
+    @Column(value = "user_recover_id")
     private UUID id;
 
-    @NotNull
-    @Min(value = 0)
-    @Max(value = 99)
-    private Integer profileType;
+    @Column
+    private UUID userId;
 
-    @NotBlank
-    @Size(min = 2, max = 36)
-    private String profileName;
+    @Size(max = Byte.MAX_VALUE)
+    @Column
+    private String verificationCode;
 
-    @ExtendedEmailValidator
-    @NotBlank
-    @Size(min = 7, max = 60)
-    private String email;
+    @Column
+    private Boolean flagRecover;
 
-    public UserInfo() {
-    }
+    @FutureOrPresent
+    @Column
+    private LocalDateTime limitDate;
 
     @JsonIgnore
     @Transient
     private boolean isNew;
 
+    public UserRecover() {
+    }
+
     @Override
     public boolean isNew() {
         return this.isNew;
     }
-
 }

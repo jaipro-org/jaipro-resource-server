@@ -43,8 +43,8 @@ public class ProfessionServiceImpl implements ProfessionService {
     }
 
     @Override
-    public void delete(Integer id) {
-        repository.deleteById(id);
+    public Mono<Void> delete(Integer id) {
+        return repository.deleteById(id);
     }
 
     @Override
