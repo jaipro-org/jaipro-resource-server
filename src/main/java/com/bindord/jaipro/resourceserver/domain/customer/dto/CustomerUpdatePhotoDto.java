@@ -4,13 +4,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.codec.multipart.FilePart;
 
-import java.util.UUID;
-
 @Setter
 @Getter
 public class CustomerUpdatePhotoDto {
 
-    private UUID id;
+    private String id;
 
     private FilePart file;
 }

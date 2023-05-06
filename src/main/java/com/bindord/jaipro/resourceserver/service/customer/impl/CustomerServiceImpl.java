@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static com.bindord.jaipro.resourceserver.utils.Constants.ERROR_EXPERIENCE_REPEATED;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.convertJSONtoString;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.getNullPropertyNames;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.instanceObjectMapper;
@@ -97,18 +98,20 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Mono<Void> updatePhoto(CustomerUpdatePhotoDto entity, String urlSource) {
-        Mono<Customer> qCustomer = repository.findById(entity.getId());
+    public Mono<Void> updatePhoto(String id, String urlSource) {
+        UUID idUUID = UUID.fromString(id);
+        Mono<Customer> qCustomer = repository.findById(idUUID);
         return qCustomer
-                    .flatMap(qCus -> {
-                                        Photo photo = new Photo();
-                                        photo.setName(entity.getId().toString());
-                                        photo.setUrl(urlSource);
-                                        photo.setDate(LocalDateTime.now());
+                .flatMap(qCus -> {
+                    Photo photo = new Photo();
+                    photo.setName(id);
+                    photo.setUrl(urlSource);
+                    photo.setDate(LocalDateTime.now());
 
-                                        qCus.setProfilePhoto(Json.of(convertJSONtoString(photo)));
-                                        return repository.save(qCus);
-                    }).then(Mono.empty());
+                    qCus.setProfilePhoto(Json.of(convertJSONtoString(photo)));
+                    return repository.save(qCus);
+                })
+                .then(Mono.empty());
     }
 
     @Override
