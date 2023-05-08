@@ -10,11 +10,12 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.codec.multipart.FilePart;
-import reactor.core.publisher.Mono;
 
 import java.beans.FeatureDescriptor;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -81,10 +82,14 @@ public class Utilitarios {
         return array;
     }
 
-    public static byte[] getBytestoFilePart(FilePart file){
+    public static byte[] getBytestoFilePart(FilePart file) {
         return DataBufferUtils.join(file.content())
                 .map(dataBuffer -> dataBuffer.asByteBuffer().array())
                 .map(x -> x).block();
+    }
+
+    public static String convertJSONtoBase64(String json) {
+        return new String(Base64.getUrlEncoder().encode(json.getBytes(StandardCharsets.UTF_8)));
     }
 }
 

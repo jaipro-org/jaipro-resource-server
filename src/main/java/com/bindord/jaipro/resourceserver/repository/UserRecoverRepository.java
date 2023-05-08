@@ -1,6 +1,6 @@
 package com.bindord.jaipro.resourceserver.repository;
 
-import com.bindord.jaipro.resourceserver.domain.user.UserInfo;
+import com.bindord.jaipro.resourceserver.domain.user.UserRecover;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
@@ -8,8 +8,8 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 @Repository
-public interface UserInfoRepository extends ReactiveCrudRepository<UserInfo, UUID> {
+public interface UserRecoverRepository extends ReactiveCrudRepository<UserRecover, UUID> {
 
-    Mono<UserInfo> findByEmail(String email);
+    Mono<UserRecover> findByIdAndUserId(UUID id, UUID userId);
 
 }

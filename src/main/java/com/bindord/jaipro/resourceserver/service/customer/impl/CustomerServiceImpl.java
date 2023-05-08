@@ -30,6 +30,7 @@ import static com.bindord.jaipro.resourceserver.utils.Constants.ERROR_EXPERIENCE
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.convertJSONtoString;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.getNullPropertyNames;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.instanceObjectMapper;
+import static java.time.LocalDateTime.now;
 import static java.util.Objects.isNull;
 
 @AllArgsConstructor
@@ -55,8 +56,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void delete(UUID id) {
-        repository.deleteById(id);
+    public Mono<Void> delete(UUID id) {
+        return repository.deleteById(id);
     }
 
     @Override

@@ -7,7 +7,6 @@ import com.bindord.jaipro.resourceserver.domain.user.dto.UserInfoDto;
 import com.bindord.jaipro.resourceserver.domain.user.dto.UserInfoUpdateDto;
 import com.bindord.jaipro.resourceserver.repository.UserInfoRepository;
 import com.bindord.jaipro.resourceserver.service.user.UserInfoService;
-import io.r2dbc.spi.Connection;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.BeanUtils;
@@ -18,7 +17,6 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.getNullPropertyNames;
-import static com.bindord.jaipro.resourceserver.utils.Utilitarios.instanceObjectMapper;
 
 @AllArgsConstructor
 @Service
@@ -42,14 +40,9 @@ public class UserInfoServiceImpl implements UserInfoService {
         return repository.findById(id).switchIfEmpty(Mono.error(new NotFoundValidationException("404")));
     }
 
-    private <T> Mono<T> close(Connection connection) {
-        return Mono.from(connection.close())
-                .then(Mono.empty());
-    }
-
     @Override
-    public void delete(UUID id) {
-        repository.deleteById(id);
+    public Mono<Void> delete(UUID id) {
+        return repository.deleteById(id);
     }
 
     @Override
@@ -60,6 +53,11 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Override
     public Flux<UserInfo> findAll() {
         return repository.findAll();
+    }
+
+    @Override
+    public Mono<UserInfo> findByEmail(String email) {
+        return repository.findByEmail(email).switchIfEmpty(Mono.error(new NotFoundValidationException("404")));
     }
 
     @SneakyThrows

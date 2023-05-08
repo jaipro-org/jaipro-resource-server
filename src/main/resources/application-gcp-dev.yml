@@ -20,5 +20,14 @@ spring:
       initial-size: 10
       max-idle-time: 30m
 
+internal:
+  services:
+    eureka-clients:
+      keycloak-auth:
+        url: http://jaipro-keycloak.jaipro.svc.cluster.local:8080/eureka/keycloak-auth/v1
+        readTimeout: 7000
+        writeTimeout: 1000
+        connectionTimeout: 300
+
 logging:
   config: classpath:log4j2-dev-spring.xml

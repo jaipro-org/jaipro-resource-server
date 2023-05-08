@@ -1,5 +1,6 @@
 package com.bindord.jaipro.resourceserver.domain.user.dto;
 
+import com.bindord.jaipro.resourceserver.validation.ExtendedEmailValidator;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,5 +25,10 @@ public class UserInfoDto {
     @NotBlank
     @Size(min = 2, max = 36)
     private String profileName;
+
+    @ExtendedEmailValidator
+    @NotBlank
+    @Size(min = 7, max = 60)
+    private String email;
 
 }

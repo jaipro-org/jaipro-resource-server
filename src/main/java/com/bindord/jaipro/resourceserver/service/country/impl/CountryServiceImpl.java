@@ -43,8 +43,8 @@ public class CountryServiceImpl implements CountryService {
     }
 
     @Override
-    public void delete(String id) {
-        repository.deleteById(id);
+    public Mono<Void> delete(String id) {
+        return repository.deleteById(id);
     }
 
     @Override

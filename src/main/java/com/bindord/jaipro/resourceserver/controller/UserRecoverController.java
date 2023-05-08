@@ -2,11 +2,10 @@ package com.bindord.jaipro.resourceserver.controller;
 
 import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
-import com.bindord.jaipro.resourceserver.domain.user.UserInfo;
-import com.bindord.jaipro.resourceserver.domain.user.dto.UserInfoDto;
-import com.bindord.jaipro.resourceserver.domain.user.dto.UserInfoUpdateDto;
-import com.bindord.jaipro.resourceserver.service.user.UserInfoService;
-import com.bindord.jaipro.resourceserver.validator.Validator;
+import com.bindord.jaipro.resourceserver.domain.user.UserRecover;
+import com.bindord.jaipro.resourceserver.domain.user.dto.UserRecoverDto;
+import com.bindord.jaipro.resourceserver.domain.user.dto.UserRecoverUpdateDto;
+import com.bindord.jaipro.resourceserver.service.user.UserRecoverService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -28,54 +26,44 @@ import java.util.UUID;
 @AllArgsConstructor
 @Slf4j
 @RestController
-@RequestMapping("${service.ingress.context-path}/user-info")
-public class UserInfoController {
+@RequestMapping("${service.ingress.context-path}/user-recover")
+public class UserRecoverController {
 
-    private final Validator validator;
+    private final UserRecoverService userRecoverService;
 
-    private final UserInfoService userInfoService;
-
-    @ApiResponse(description = "Persist an user info",
+    @ApiResponse(description = "Persist a userRecover",
             responseCode = "200")
     @PostMapping(value = "",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<UserInfo> save(@Valid @RequestBody UserInfoDto userInfo)
+    public Mono<UserRecover> save(@Valid @RequestBody UserRecoverDto userRecover)
             throws NotFoundValidationException, CustomValidationException {
-        return userInfoService.save(userInfo);
+        return userRecoverService.save(userRecover);
     }
 
-    @ApiResponse(description = "Update an user info",
+    @ApiResponse(description = "Update a userRecover",
             responseCode = "200")
     @PutMapping(value = "",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<UserInfo> update(@Valid @RequestBody UserInfoUpdateDto userInfo)
+    public Mono<UserRecover> update(@Valid @RequestBody UserRecoverUpdateDto userRecover)
             throws NotFoundValidationException, CustomValidationException {
-        return userInfoService.update(userInfo);
+        return userRecoverService.update(userRecover);
     }
 
-    @ApiResponse(description = "List users info",
+    @ApiResponse(description = "List userRecovers",
             responseCode = "200")
     @GetMapping(value = "",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Flux<UserInfo> findAll() {
-        return userInfoService.findAll();
+    public Flux<UserRecover> findAll() {
+        return userRecoverService.findAll();
     }
 
-    @ApiResponse(description = "Find by id",
+    @ApiResponse(description = "Validate limit date of ticket to recover password",
             responseCode = "200")
-    @GetMapping(value = "/{id}",
-            produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<UserInfo> findById(@PathVariable UUID id) throws NotFoundValidationException {
-        return userInfoService.findOne(id);
+    @GetMapping(value = "/{id}/user/{userId}")
+    public Mono<Void> validateUserRecoverTicket(@PathVariable UUID id, @PathVariable UUID userId) {
+        return userRecoverService.validateUserRecoverTicket(id, userId);
     }
 
-    @ApiResponse(description = "Find by email",
-            responseCode = "200")
-    @GetMapping(value = "/query",
-            produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<UserInfo> findByEmail(@RequestParam String email) {
-        return userInfoService.findByEmail(email);
-    }
 }
