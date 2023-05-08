@@ -34,23 +34,24 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
     private String URL_AUTENTICADA;
 
     @Override
-    public Mono<String> saveCustomerPhoto(byte[] file, UUID customerId) {
+    public Mono<String> saveCustomerPhoto(byte[] file, String customerId, String extension) {
 
-        String customerIdStr =  customerId.toString();
+        String customerIdStr = customerId.toString();
         String path = CUSTOMER_PHOTO_PATH
-                            .replace("[ID]", customerIdStr)
-                            .replace("[FILENAME]", customerIdStr);
+                            .replace("[FILENAME]", customerIdStr)
+                            .replace("[EXTENSION]", extension);
 
         return SaveFile(file, path);
     }
 
     @Override
-    public Mono<String> saveSpecialistPhoto(byte[] file, UUID specialistId) {
+    public Mono<String> saveSpecialistPhoto(byte[] file, UUID specialistId, String extension) {
 
         String specialistIdStr = specialistId.toString();
         String path = SPECIALIST_PHOTO_PATH
                             .replace("[ID]", specialistIdStr)
-                            .replace("[FILENAME]", specialistIdStr);
+                            .replace("[FILENAME]", specialistIdStr)
+                            .replace("[EXTENSION]", extension);
 
         return SaveFile(file, path);
     }
@@ -60,7 +61,7 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
 
         String specialistIdStr = specialistId.toString();
         String path = SPECIALIST_GALLERY_PATH
-                            .replace("[ID]", specialistIdStr)
+                           /* .replace("[ID]", specialistIdStr)*/
                             .replace("[FILENAME]", fileName);
 
         return SaveFile(file, path);

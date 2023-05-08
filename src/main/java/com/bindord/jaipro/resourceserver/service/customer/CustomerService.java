@@ -23,6 +23,6 @@ public interface CustomerService extends BaseService<Customer, UUID, CustomerDto
 
     Mono<Customer> updateAbout(CustomerInformationUpdateDto entity);
     Mono<Void> updateLocation(CustomerLocationUpdateDto entity);
-    Mono<Void> updatePhoto(CustomerUpdatePhotoDto customer, String urlSource);
+    Mono<Void> updatePhoto(String id, String urlSource);
     Mono<Void> updatePassword(CustomerPasswordUpdateDto entity);
 }

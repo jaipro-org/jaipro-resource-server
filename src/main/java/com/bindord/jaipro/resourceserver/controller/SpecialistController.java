@@ -91,7 +91,10 @@ public class SpecialistController {
         try{
             return DataBufferUtils.join(file.content())
                     .map(dataBuffer -> dataBuffer.asByteBuffer().array())
-                    .map(x -> googleCloudService.saveSpecialistPhoto(x, specialistId))
+                    .map(x -> {
+                        String extension = file.filename().split("[.]")[1];
+                        return googleCloudService.saveSpecialistPhoto(x, specialistId, extension);
+                    })
                     .flatMap(x-> x);
         }catch (Exception ex){
             return Mono.just(ex.getMessage());
