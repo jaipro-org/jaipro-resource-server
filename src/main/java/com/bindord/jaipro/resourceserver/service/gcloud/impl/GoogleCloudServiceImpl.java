@@ -11,8 +11,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.UUID;
 
 import static com.bindord.jaipro.resourceserver.utils.Constants.CUSTOMER_PHOTO_PATH;
@@ -22,9 +23,6 @@ import static com.bindord.jaipro.resourceserver.utils.Constants.SPECIALIST_PHOTO
 @Service
 public class GoogleCloudServiceImpl implements GoogleCloudService {
 
-    @Value("${spring.gcp.storage.path-credentials}")
-    private String PATH_CREDENTIALS;
-
     @Value("${spring.gcp.storage.project-id}")
     private String PROJECT_ID;
 
@@ -33,10 +31,13 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
     @Value("${spring.gcp.storage.url-autenticada}")
     private String URL_AUTENTICADA;
 
+    @Value("${spring.gcp.storage.encoded-key}")
+    private String KEY_ENCODED;
+
     @Override
     public Mono<String> saveCustomerPhoto(byte[] file, String customerId, String extension) {
 
-        String customerIdStr = customerId.toString();
+        String customerIdStr = customerId;
         String path = CUSTOMER_PHOTO_PATH
                             .replace("[FILENAME]", customerIdStr)
                             .replace("[EXTENSION]", extension);
@@ -59,9 +60,7 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
     @Override
     public Mono<String> saveSpecialistGallery(byte[] file, UUID specialistId, String fileName) {
 
-        String specialistIdStr = specialistId.toString();
         String path = SPECIALIST_GALLERY_PATH
-                           /* .replace("[ID]", specialistIdStr)*/
                             .replace("[FILENAME]", fileName);
 
         return SaveFile(file, path);
@@ -78,7 +77,8 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
 
     private Mono<Storage> getStorage() {
         try {
-            Credentials credentials = GoogleCredentials.fromStream(new FileInputStream(PATH_CREDENTIALS));
+            var arrayCredentials = new ByteArrayInputStream(Base64.getDecoder().decode(KEY_ENCODED));
+            Credentials credentials = GoogleCredentials.fromStream(arrayCredentials);
             Storage storage = StorageOptions.newBuilder().setCredentials(credentials)
                     .setProjectId(PROJECT_ID).build().getService();
 

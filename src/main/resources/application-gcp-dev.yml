@@ -20,6 +20,15 @@ spring:
       initial-size: 10
       max-idle-time: 30m
 
+  # GCP Cloud Storage
+  gcp:
+    storage:
+      url-autenticada: https://storage.cloud.google.com/jaipro
+      save: jaipro/specialist/{0}/photo/{1}
+      bucket: jaipro
+      project-id: pure-anthem-382602
+      encoded-key: ${sm://projects/${spring.cloud.gcp.secretmanager.project-id}/secrets/GCP_SA_FOR_CLOUD_STORAGE}
+
 internal:
   services:
     eureka-clients:
