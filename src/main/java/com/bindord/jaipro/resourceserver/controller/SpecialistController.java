@@ -11,6 +11,7 @@ import com.bindord.jaipro.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.multipart.FilePart;
@@ -87,15 +88,20 @@ public class SpecialistController {
     public Mono<Boolean> existsSpecialistByDocument(@RequestParam String document) throws NotFoundValidationException {
         return specialistService.existsSpecialistByDocument(document);
     }
-    private Mono<String> uploadFile(@RequestPart("file") FilePart file, UUID specialistId){
+    private Mono<String> uploadFile(String file, UUID specialistId){
         try{
-            return DataBufferUtils.join(file.content())
+            byte[] data = Base64.decodeBase64(file);
+
+            return googleCloudService
+                    .saveSpecialistPhoto(data, specialistId, ".png");
+
+            /*return DataBufferUtils.join(file.content())
                     .map(dataBuffer -> dataBuffer.asByteBuffer().array())
                     .map(x -> {
                         String extension = file.filename().split("[.]")[1];
                         return googleCloudService.saveSpecialistPhoto(x, specialistId, extension);
                     })
-                    .flatMap(x-> x);
+                    .flatMap(x-> x);*/
         }catch (Exception ex){
             return Mono.just(ex.getMessage());
         }
