@@ -4,6 +4,7 @@ import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
 import com.bindord.jaipro.resourceserver.domain.specialist.Specialist;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistSearchDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistUpdateDto;
 import com.bindord.jaipro.resourceserver.service.gcloud.GoogleCloudService;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecialistService;
@@ -79,6 +80,14 @@ public class SpecialistController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public Mono<Specialist> findById(@PathVariable UUID id) throws NotFoundValidationException {
         return specialistService.findOne(id);
+    }
+
+    @ApiResponse(description = "Find by filters",
+            responseCode = "200")
+    @GetMapping(value = "/search",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public Flux<Specialist> search(@Valid @RequestBody SpecialistSearchDto specialistSearchDto) throws NotFoundValidationException {
+        return Flux.just(new Specialist());
     }
 
     @ApiResponse(description = "Verify if specialist exists",
