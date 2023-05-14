@@ -10,9 +10,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Setter
@@ -23,11 +22,11 @@ public class Mail implements Persistable<Integer> {
     @Column(value = "mail_id")
     private Integer id;
 
-    @NotEmpty
+    @NotBlank
     @Column
     private String subject;
 
-    @NotEmpty
+    @NotBlank
     @Column
     @Size(max = 2000)
     private String body;
