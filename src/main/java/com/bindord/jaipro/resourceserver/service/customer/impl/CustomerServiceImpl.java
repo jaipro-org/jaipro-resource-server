@@ -9,7 +9,6 @@ import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerInformation
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerLocationUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerPasswordUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerUpdateDto;
-import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerUpdatePhotoDto;
 import com.bindord.jaipro.resourceserver.domain.json.Photo;
 import com.bindord.jaipro.resourceserver.repository.CustomerRepository;
 import com.bindord.jaipro.resourceserver.service.customer.CustomerService;
@@ -26,11 +25,9 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static com.bindord.jaipro.resourceserver.utils.Constants.ERROR_EXPERIENCE_REPEATED;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.convertJSONtoString;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.getNullPropertyNames;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.instanceObjectMapper;
-import static java.time.LocalDateTime.now;
 import static java.util.Objects.isNull;
 
 @AllArgsConstructor

@@ -39,8 +39,8 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
 
         String customerIdStr = customerId;
         String path = CUSTOMER_PHOTO_PATH
-                            .replace("[FILENAME]", customerIdStr)
-                            .replace("[EXTENSION]", extension);
+                .replace("[FILENAME]", customerIdStr)
+                .replace("[EXTENSION]", extension);
 
         return SaveFile(file, path);
     }
@@ -50,9 +50,9 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
 
         String specialistIdStr = specialistId.toString();
         String path = SPECIALIST_PHOTO_PATH
-                            .replace("[ID]", specialistIdStr)
-                            .replace("[FILENAME]", specialistIdStr)
-                            .replace("[EXTENSION]", extension);
+                .replace("[ID]", specialistIdStr)
+                .replace("[FILENAME]", specialistIdStr)
+                .replace("[EXTENSION]", extension);
 
         return SaveFile(file, path);
     }
@@ -61,7 +61,8 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
     public Mono<String> saveSpecialistGallery(byte[] file, UUID specialistId, String fileName) {
 
         String path = SPECIALIST_GALLERY_PATH
-                            .replace("[FILENAME]", fileName);
+                .replace("[ID]", specialistId.toString())
+                .replace("[FILENAME]", fileName);
 
         return SaveFile(file, path);
     }
@@ -71,8 +72,8 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
 
         return getStorage()
-                    .map(storage -> storage.create(blobInfo, file))
-                    .then(Mono.just(URL_AUTENTICADA.concat(path)));
+                .map(storage -> storage.create(blobInfo, file))
+                .then(Mono.just(URL_AUTENTICADA.concat("/" + path)));
     }
 
     private Mono<Storage> getStorage() {

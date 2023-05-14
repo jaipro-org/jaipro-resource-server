@@ -17,6 +17,7 @@ import org.springframework.data.relational.core.mapping.Table;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.UUID;
 
@@ -68,6 +69,11 @@ public class Specialist extends BaseDomain implements Persistable<UUID> {
     @Size(min = 9, max = 15)
     @Column
     private String phone;
+
+    @NotEmpty
+    @Size(min = 9, max = 15)
+    @Column
+    private String secondaryPhone;
 
     @NotBlank
     @Size(min = 7, max = Byte.MAX_VALUE)
