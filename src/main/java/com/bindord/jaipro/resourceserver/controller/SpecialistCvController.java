@@ -97,11 +97,11 @@ public class SpecialistCvController {
     @PutMapping(value = "/gallery",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public Mono<SpecialistCv> updateGallery(@RequestPart List<FilePart> files,
+    public Mono<SpecialistCv> updateGallery(@RequestPart List<FilePart> images,
                                             @RequestPart @Valid SpecialistGalleryUpdateDto specialistGallery) {
         List<String> filesToRemove = specialistGallery.getFileIdsToRemove();
         specialistGallery.setFileIdsToRemove(filesToRemove == null || filesToRemove.isEmpty() ?
                 Collections.emptyList() : filesToRemove);
-        return specialistCvService.updateGallery(files, specialistGallery);
+        return specialistCvService.updateGallery(images, specialistGallery);
     }
 }

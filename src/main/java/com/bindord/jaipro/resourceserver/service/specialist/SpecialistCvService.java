@@ -21,5 +21,5 @@ public interface SpecialistCvService extends BaseService<SpecialistCv, UUID, Spe
 
     Mono<Void> updateExperience(UUID id, SpecialistExperienceUpdateDto entity);
     Mono<Experience> saveExperience(UUID id, Experience experience);
-    Mono<SpecialistCv> updateGallery(List<FilePart> files, SpecialistGalleryUpdateDto entity);
+    Mono<SpecialistCv> updateGallery(List<FilePart> images, SpecialistGalleryUpdateDto entity);
 }

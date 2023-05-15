@@ -119,7 +119,7 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     }
 
     @Override
-    public Mono<SpecialistCv> updateGallery(List<FilePart> files, SpecialistGalleryUpdateDto entity) {
+    public Mono<SpecialistCv> updateGallery(List<FilePart> images, SpecialistGalleryUpdateDto entity) {
 
         Mono<SpecialistCv> qSpecialistCv = repository.findById(entity.getSpecialistId());
         return qSpecialistCv.flatMap(qScv -> {
@@ -130,12 +130,12 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
                             !entity.getFileIdsToRemove().contains(gall.getUrl()))
                     .collect(Collectors.toList());
 
-            if (files.size() + finalGallery.size() > Constants.MAX_GALLERY_FILES) {
+            if (images.size() + finalGallery.size() > Constants.MAX_GALLERY_FILES) {
                 return Mono.error(new CustomValidationException(
                         "Ha excedido el numero maximo de archivos permitidos para subir a la galeria. Maximo 6."));
             }
 
-            return Flux.fromIterable(files)
+            return Flux.fromIterable(images)
                     .flatMap(nwPhoto -> getBytesToFilePart(nwPhoto)
                             .flatMap(photoBytes -> googleCloudService.saveSpecialistGallery(photoBytes,
                                     entity.getSpecialistId(),

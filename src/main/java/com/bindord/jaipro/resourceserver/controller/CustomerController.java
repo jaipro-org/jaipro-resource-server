@@ -9,9 +9,6 @@ import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerInformation
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerLocationUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerPasswordUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerUpdateDto;
-import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerUpdatePhotoDto;
-import com.bindord.jaipro.resourceserver.domain.specialist.Specialist;
-import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistUpdateDto;
 import com.bindord.jaipro.resourceserver.service.customer.CustomerService;
 import com.bindord.jaipro.resourceserver.service.gcloud.GoogleCloudService;
 import com.bindord.jaipro.resourceserver.validator.Validator;
