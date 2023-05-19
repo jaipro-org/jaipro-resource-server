@@ -40,3 +40,7 @@ internal:
 
 logging:
   config: classpath:log4j2-dev-spring.xml
+  level:
+    io.r2dbc.postgresql.client: ERROR # for database initialization
+    io.r2dbc.postgresql.QUERY: ERROR # for queries
+    io.r2dbc.postgresql.PARAM: ERROR # for parameters

@@ -12,8 +12,8 @@ import com.bindord.jaipro.resourceserver.domain.specialist.json.Experience;
 import com.bindord.jaipro.resourceserver.repository.SpecialistCvRepository;
 import com.bindord.jaipro.resourceserver.service.gcloud.GoogleCloudService;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecialistCvService;
+import com.bindord.jaipro.resourceserver.utils.Constants;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.r2dbc.postgresql.codec.Json;
 import io.r2dbc.spi.Connection;
 import lombok.AllArgsConstructor;
@@ -24,17 +24,17 @@ import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.bindord.jaipro.resourceserver.utils.Constants.ERROR_EXPERIENCE_REPEATED;
-import static com.bindord.jaipro.resourceserver.utils.Constants.MAX_GALLERY_FILES;
 import static com.bindord.jaipro.resourceserver.utils.Constants.RESOURCE_NOT_FOUND;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.convertJSONtoString;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.getNullPropertyNames;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.instanceObjectMapper;
+import static com.bindord.jaipro.resourceserver.utils.Utilitarios.serializeObject;
 import static java.time.LocalDateTime.now;
 
 @AllArgsConstructor
@@ -124,41 +124,42 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     }
 
     @Override
-    public Flux<Photo> updateGallery(SpecialistGalleryUpdateDto entity) {
-        Mono<SpecialistCv> qSpecialistCv = repository.findById(entity.getSpecialistCvId());
-        return qSpecialistCv.map(qScv -> {
-            try {
-                List<Photo> gallery = convertJsonToClassPhoto(qScv.getGallery());
-                for (String url : entity.getFilesRemove()) {
-                    gallery.removeIf(x -> x.getUrl().equals(url));
-                }
+    public Mono<SpecialistCv> updateGallery(List<FilePart> images, SpecialistGalleryUpdateDto entity) {
 
-                for (var file : entity.getFiles()) {
-                    byte[] bytes = getBytesToFilePart(file).block();
-                    var url = googleCloudService.saveSpecialistGallery(bytes, entity.getSpecialistCvId(), file.filename());
+        Mono<SpecialistCv> qSpecialistCv = repository.findById(entity.getSpecialistId());
+        return qSpecialistCv.flatMap(qScv -> {
+            List<Photo> gallery = qScv.getGallery() == null
+                    ? Collections.emptyList() : convertJsonToClassPhoto(qScv.getGallery());
+            List<Photo> finalGallery = gallery.stream()
+                    .filter(gall ->
+                            !entity.getFileIdsToRemove().contains(gall.getUrl()))
+                    .collect(Collectors.toList());
 
-                    Photo photo = new Photo();
-                    photo.setDate(now());
-                    photo.setName(file.filename());
-                    photo.setSize(0);
-                    photo.setUrl(url.block());
-
-                    gallery.add(photo);
-                }
-
-                if (gallery.size() > MAX_GALLERY_FILES) {
-                    throw new Exception("La cantidad de imagenes es superior a la esperada");
-                }
-
-                ObjectMapper objMapper = instanceObjectMapper();
-                qScv.setGallery(Json.of(objMapper.writeValueAsString(gallery)));
-                repository.save(qScv);
-
-                return gallery;
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            if (images.size() + finalGallery.size() > Constants.MAX_GALLERY_FILES) {
+                return Mono.error(new CustomValidationException(
+                        "Ha excedido el numero maximo de archivos permitidos para subir a la galeria. Maximo 6."));
             }
-        }).flatMapIterable(g -> g);
+
+            return Flux.fromIterable(images)
+                    .flatMap(nwPhoto -> getBytesToFilePart(nwPhoto)
+                            .flatMap(photoBytes -> googleCloudService.saveSpecialistGallery(photoBytes,
+                                    entity.getSpecialistId(),
+                                    nwPhoto.filename())
+                            ).flatMap(urlOutput -> {
+                                Photo photo = new Photo();
+                                photo.setDate(now());
+                                photo.setName(nwPhoto.filename());
+                                photo.setSize(0);
+                                photo.setUrl(urlOutput);
+                                return Mono.just(photo);
+                            }))
+                    .collectList()
+                    .flatMap(
+                            photos -> {
+                                finalGallery.addAll(photos);
+                                return saveSpecialistGallery(finalGallery, qScv);
+                            });
+        });
     }
 
     private Flux<Integer> sizeFile(FilePart file) {
@@ -170,6 +171,11 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
                 });
     }
 
+    private Mono<SpecialistCv> saveSpecialistGallery(List<Photo> gallery, SpecialistCv qSvc) {
+        qSvc.setGallery(Json.of(serializeObject(gallery)));
+        return repository.save(qSvc);
+    }
+
     @SneakyThrows
     private List<Experience> convertJsonToClass(Json json) {
         var objectMapper = instanceObjectMapper();
@@ -179,12 +185,11 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
         return participantJsonList;
     }
 
-    private List<Photo> convertJsonToClassPhoto(Json json) throws IOException {
+    @SneakyThrows
+    private List<Photo> convertJsonToClassPhoto(Json json) {
         var objectMapper = instanceObjectMapper();
 
-        List<Photo> photos = objectMapper.readValue(json.asString(), new TypeReference<List<Photo>>() {
-        });
-        return photos;
+        return objectMapper.readValue(json.asString(), new TypeReference<>() {});
     }
 
     @SneakyThrows

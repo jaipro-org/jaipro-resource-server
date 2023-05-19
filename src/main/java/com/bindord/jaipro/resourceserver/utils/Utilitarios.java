@@ -3,6 +3,7 @@ package com.bindord.jaipro.resourceserver.utils;
 import com.bindord.jaipro.resourceserver.configuration.JacksonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -61,6 +62,11 @@ public class Utilitarios {
 
     public static ObjectMapper instanceObjectMapper() {
         return JacksonFactory.getObjectMapper();
+    }
+
+    @SneakyThrows
+    public static String serializeObject(Object obj) {
+        return instanceObjectMapper().writeValueAsString(obj);
     }
 
     public static String[] getNullPropertyNames(Object source) {

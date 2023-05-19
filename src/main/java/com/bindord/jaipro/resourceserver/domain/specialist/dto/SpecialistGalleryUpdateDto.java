@@ -1,11 +1,11 @@
 package com.bindord.jaipro.resourceserver.domain.specialist.dto;
 
-import com.bindord.jaipro.resourceserver.domain.json.Photo;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.codec.multipart.FilePart;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,11 +13,8 @@ import java.util.UUID;
 @Getter
 public class SpecialistGalleryUpdateDto {
 
-    @Valid
-    private UUID specialistCvId;
+    @NotNull
+    private UUID specialistId;
 
-    @Valid
-    private List<String> filesRemove;
-
-    private List<FilePart> files;
+    private List<String> fileIdsToRemove;
 }
