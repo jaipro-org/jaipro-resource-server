@@ -15,21 +15,12 @@ import java.util.UUID;
 @Getter
 public class SpecialistCvUpdateDto {
 
-    private UUID id;
-
     @Size(min = 30, max = 1300)
     private String about;
 
-    @Valid
-    private List<SocialNetwork> socialNetworks;
+    private String filePhoto;
 
-    @Valid
-    private List<Photo> gallery;
+    private String filePhotoExtension;
 
-    @Valid
-    private Photo profilePhoto;
-
-    @Valid
-    private List<Experience> experienceTimes;
-
+    private boolean flagUpdatePhoto;
 }

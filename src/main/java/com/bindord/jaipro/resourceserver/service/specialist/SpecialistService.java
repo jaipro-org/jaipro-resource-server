@@ -1,5 +1,7 @@
 package com.bindord.jaipro.resourceserver.service.specialist;
 
+import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
+import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
 import com.bindord.jaipro.resourceserver.domain.specialist.Specialist;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistUpdateDto;
@@ -14,4 +16,6 @@ public interface SpecialistService extends BaseService<Specialist, UUID, Special
     Flux<Specialist> findAllNative();
 
     Mono<Boolean> existsSpecialistByDocument(String document);
+
+    Mono<Specialist> updatePresentation(UUID id, SpecialistUpdateDto specialistUpdateDto);
 }

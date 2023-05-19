@@ -126,20 +126,26 @@ public class CustomerController {
             responseCode = "200")
     @PostMapping(value = "/updatePhoto",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public Mono<Void> updatePhoto(@RequestPart("file") FilePart file, @RequestPart("id") String id)
+    public Mono<Void> updatePhoto(@RequestPart("file") FilePart file, @RequestPart("id") String id,
+                                  @RequestPart("extension") String extension)
             throws NotFoundValidationException, CustomValidationException {
-        Mono<String> monoImage = uploadPhotoFile(file, id);
+        Mono<String> monoImage = uploadPhotoFile(file, id, extension);
         return monoImage
-                .map(url -> customerService.updatePhoto(id, url))
-                .then();
+                .flatMap(url -> customerService.updatePhoto(id, url));
     }
 
-    private Mono<String> uploadPhotoFile(@RequestPart("file") FilePart file, String customerId) {
+    private Mono<String> uploadPhotoFile(@RequestPart("file") FilePart file, String customerId, String extension) {
+
         return DataBufferUtils.join(file.content())
                 .map(dataBuffer -> dataBuffer.asByteBuffer().array())
                 .map(bytes -> {
-                    String extension = file.filename().split("[.]")[1];
-                    return googleCloudService.saveCustomerPhoto(bytes, customerId, extension);
+                    if(bytes.length == 0)
+                        return googleCloudService
+                                .removeCustomerPhoto(customerId, extension).then(Mono.just(""))
+                                .then(Mono.just(""));
+
+                    return googleCloudService
+                            .saveCustomerPhoto(bytes, customerId, extension);
                 })
                 .flatMap(urlPath -> urlPath);
     }

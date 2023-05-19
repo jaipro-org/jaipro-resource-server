@@ -17,6 +17,7 @@ public interface SpecialistCvService extends BaseService<SpecialistCv, UUID, Spe
 
     Flux<SpecialistCv> findAllNative();
 
+    Mono<SpecialistCv> updatePresentation(UUID id, SpecialistCvUpdateDto specialist, String url);
     Mono<Void> updateExperience(UUID id, SpecialistExperienceUpdateDto entity);
     Mono<Experience> saveExperience(UUID id, Experience experience);
     Flux<Photo> updateGallery(SpecialistGalleryUpdateDto entity);

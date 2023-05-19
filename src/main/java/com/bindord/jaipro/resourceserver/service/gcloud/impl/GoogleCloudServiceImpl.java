@@ -37,9 +37,8 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
     @Override
     public Mono<String> saveCustomerPhoto(byte[] file, String customerId, String extension) {
 
-        String customerIdStr = customerId;
         String path = CUSTOMER_PHOTO_PATH
-                            .replace("[FILENAME]", customerIdStr)
+                            .replace("[FILENAME]", customerId)
                             .replace("[EXTENSION]", extension);
 
         return SaveFile(file, path);
@@ -66,6 +65,25 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
         return SaveFile(file, path);
     }
 
+    @Override
+    public Mono<Void> removeCustomerPhoto(String customerId, String extension) {
+        String path = CUSTOMER_PHOTO_PATH
+                .replace("[FILENAME]", customerId)
+                .replace("[EXTENSION]", extension);
+
+        return removeFile(path);
+    }
+
+    @Override
+    public Mono<Void> removeSpecialistPhoto(String specialistId, String extension) {
+        String path = SPECIALIST_PHOTO_PATH
+                .replace("[ID]", specialistId)
+                .replace("[FILENAME]", specialistId)
+                .replace("[EXTENSION]", extension);
+
+        return removeFile(path);
+    }
+
     private Mono<String> SaveFile(byte[] file, String path) {
         BlobId blobId = BlobId.of(BUCKET, path);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
@@ -73,6 +91,13 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
         return getStorage()
                     .map(storage -> storage.create(blobInfo, file))
                     .then(Mono.just(URL_AUTENTICADA.concat(path)));
+    }
+
+    private Mono<Void> removeFile(String path) {
+        BlobId blobId = BlobId.of(BUCKET, path);
+        return getStorage()
+                .map(x -> x.delete(blobId))
+                .then(Mono.empty());
     }
 
     private Mono<Storage> getStorage() {

@@ -9,11 +9,13 @@ import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvUpdat
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistExperienceUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistGalleryUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.json.Experience;
+import com.bindord.jaipro.resourceserver.service.gcloud.GoogleCloudService;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecialistCvService;
 import com.bindord.jaipro.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,6 +40,8 @@ public class SpecialistCvController {
 
     private final SpecialistCvService specialistCvService;
 
+    private final GoogleCloudService googleCloudService;
+
     @ApiResponse(description = "Persist a specialist cv",
             responseCode = "200")
     @PostMapping(value = "",
@@ -50,12 +54,14 @@ public class SpecialistCvController {
 
     @ApiResponse(description = "Update a specialist cv",
             responseCode = "200")
-    @PutMapping(value = "",
+    @PutMapping(value = "/{id}",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<SpecialistCv> update(@Valid @RequestBody SpecialistCvUpdateDto specialist)
+    public Mono<SpecialistCv> update(@PathVariable UUID id, @Valid @RequestBody SpecialistCvUpdateDto specialist)
             throws NotFoundValidationException, CustomValidationException {
-        return specialistCvService.update(specialist);
+
+        return uploadFile(id, specialist)
+                .flatMap(urlFile -> specialistCvService.updatePresentation(id, specialist, urlFile));
     }
 
     @ApiResponse(description = "List specialist's cvs",
@@ -102,5 +108,25 @@ public class SpecialistCvController {
     public Flux<Photo> updateGallery(@Valid @RequestBody SpecialistGalleryUpdateDto specialistGallery)
             throws NotFoundValidationException {
         return specialistCvService.updateGallery(specialistGallery);
+    }
+
+    private Mono<String> uploadFile(UUID specialistId, SpecialistCvUpdateDto specialist){
+        try{
+            if(!specialist.isFlagUpdatePhoto())
+                return Mono.just("");
+
+            if(specialist.isFlagUpdatePhoto() && specialist.getFilePhoto().isBlank()){
+                return googleCloudService
+                        .removeSpecialistPhoto(specialistId.toString(), specialist.getFilePhotoExtension())
+                        .then(Mono.just(""));
+            }
+
+            byte[] data = Base64.decodeBase64(specialist.getFilePhoto());
+
+            return googleCloudService
+                    .saveSpecialistPhoto(data, specialistId, specialist.getFilePhotoExtension());
+        }catch (Exception ex){
+            return Mono.just(ex.getMessage());
+        }
     }
 }

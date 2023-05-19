@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static com.bindord.jaipro.resourceserver.utils.Constants.ERROR_EXPERIENCE_REPEATED;
+import static com.bindord.jaipro.resourceserver.utils.Constants.RESOURCE_NOT_FOUND;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.convertJSONtoString;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.getNullPropertyNames;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.instanceObjectMapper;
@@ -103,16 +104,9 @@ public class CustomerServiceImpl implements CustomerService {
         UUID idUUID = UUID.fromString(id);
         Mono<Customer> qCustomer = repository.findById(idUUID);
         return qCustomer
-                .flatMap(qCus -> {
-                    Photo photo = new Photo();
-                    photo.setName(id);
-                    photo.setUrl(urlSource);
-                    photo.setDate(LocalDateTime.now());
-
-                    qCus.setProfilePhoto(Json.of(convertJSONtoString(photo)));
-                    return repository.save(qCus);
-                })
-                .then(Mono.empty());
+                .switchIfEmpty(Mono.error(new CustomValidationException(RESOURCE_NOT_FOUND)))
+                .flatMap(qCus -> repository.save(mapperPhoto(id, urlSource, qCus)))
+                .then();
     }
 
     @Override
@@ -173,8 +167,20 @@ public class CustomerServiceImpl implements CustomerService {
     private Photo convertJsonToClass(Json json) throws IOException {
         var objectMapper = instanceObjectMapper();
 
-        Photo photo = objectMapper.readValue(json.asString(), new TypeReference<Photo>() {
-        });
+        Photo photo = objectMapper.readValue(json.asString(), new TypeReference<Photo>() {});
         return photo;
+    }
+
+    private Customer mapperPhoto(String id, String urlSource, Customer entity){
+        if(urlSource.isBlank())
+            return entity;
+
+        Photo photo = new Photo();
+        photo.setName(id);
+        photo.setUrl(urlSource);
+        photo.setDate(LocalDateTime.now());
+
+        entity.setProfilePhoto(Json.of(convertJSONtoString(photo)));
+        return entity;
     }
 }

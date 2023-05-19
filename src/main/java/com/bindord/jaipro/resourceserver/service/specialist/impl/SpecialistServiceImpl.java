@@ -30,8 +30,7 @@ public class SpecialistServiceImpl implements SpecialistService {
 
     @Override
     public Mono<Specialist> update(SpecialistUpdateDto entity) throws NotFoundValidationException, CustomValidationException {
-        Mono<Specialist> qSpecialist = repository.findById(entity.getId());
-        return qSpecialist.flatMap(qCus -> repository.save(convertToEntity(entity, qCus)));
+        return null;
     }
 
     @Override
@@ -42,6 +41,13 @@ public class SpecialistServiceImpl implements SpecialistService {
     @Override
     public Mono<Boolean> existsSpecialistByDocument(String document) {
         return repository.existsSpecialistByDocument(document);
+    }
+
+    @Override
+    public Mono<Specialist> updatePresentation(UUID id, SpecialistUpdateDto specialistUpdateDto) {
+        Mono<Specialist> qSpecialist = repository.findById(id);
+        return qSpecialist
+                    .flatMap(qCus -> repository.save(convertToEntity(specialistUpdateDto, qCus)));
     }
 
     private <T> Mono<T> close(Connection connection) {

@@ -13,8 +13,6 @@ import java.util.UUID;
 @Getter
 public class SpecialistUpdateDto {
 
-    private UUID id;
-
     @NotBlank
     @Size(min = 2, max = 36)
     private String name;
@@ -31,9 +29,10 @@ public class SpecialistUpdateDto {
     @Size(min = 9, max = 15)
     private String phone;
 
+    @NotBlank
+    @Size(min = 9, max = 15)
+    private String secondaryPhone;
+
     @Schema(example = "1")
     private Integer districtId;
-
-    private String file;
-
 }

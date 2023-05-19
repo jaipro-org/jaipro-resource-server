@@ -26,18 +26,16 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 import static com.bindord.jaipro.resourceserver.utils.Constants.ERROR_EXPERIENCE_REPEATED;
 import static com.bindord.jaipro.resourceserver.utils.Constants.MAX_GALLERY_FILES;
+import static com.bindord.jaipro.resourceserver.utils.Constants.RESOURCE_NOT_FOUND;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.convertJSONtoString;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.getNullPropertyNames;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.instanceObjectMapper;
 import static java.time.LocalDateTime.now;
-import static java.util.Objects.isNull;
-import static org.springframework.util.CollectionUtils.isEmpty;
 
 @AllArgsConstructor
 @Service
@@ -54,8 +52,7 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
 
     @Override
     public Mono<SpecialistCv> update(SpecialistCvUpdateDto entity) throws NotFoundValidationException, CustomValidationException {
-        Mono<SpecialistCv> qSpecialistCv = repository.findById(entity.getId());
-        return qSpecialistCv.flatMap(qCus -> repository.save(convertToEntity(entity, qCus)));
+        return null;
     }
 
     @Override
@@ -86,6 +83,14 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     @Override
     public Flux<SpecialistCv> findAllNative() {
         return repository.findAll();
+    }
+
+    @Override
+    public Mono<SpecialistCv> updatePresentation(UUID id, SpecialistCvUpdateDto specialist, String url) {
+        Mono<SpecialistCv> qSpecialistCv = repository.findById(id);
+        return qSpecialistCv
+                .switchIfEmpty(Mono.error(new CustomValidationException(RESOURCE_NOT_FOUND)))
+                .flatMap(qCus -> repository.save(convertToEntity(specialist, qCus, id.toString(), url)));
     }
 
     @Override
@@ -183,30 +188,25 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     }
 
     @SneakyThrows
-    private SpecialistCv convertToEntity(SpecialistCvUpdateDto obj, SpecialistCv specialistCv) {
+    private SpecialistCv convertToEntity(SpecialistCvUpdateDto obj, SpecialistCv specialistCv, String id, String url) {
         BeanUtils.copyProperties(obj, specialistCv, getNullPropertyNames(obj));
+
+        if(!obj.isFlagUpdatePhoto())
+            return specialistCv;
+
+        if(obj.isFlagUpdatePhoto() && url.isBlank()){
+            specialistCv.setProfilePhoto(null);
+            return specialistCv;
+        }
+
+        var photo = new Photo();
+        photo.setName(id);
+        photo.setUrl(url);
+        photo.setDate(now());
+
         var objMapper = instanceObjectMapper();
-        if (!isEmpty(obj.getSocialNetworks()))
-            specialistCv.setSocialNetworks(
-                    Json.of(
-                            objMapper.writeValueAsString(obj.getSocialNetworks())
-                    ));
-        if (!isEmpty(obj.getGallery()))
-            specialistCv.setGallery(
-                    Json.of(
-                            objMapper.writeValueAsString(obj.getGallery())
-                    ));
-        if (!isEmpty(obj.getExperienceTimes()))
-            specialistCv.setExperienceTimes(
-                    Json.of(
-                            objMapper.writeValueAsString(obj.getExperienceTimes())
-                    ));
-        if (!isNull(obj.getProfilePhoto()))
-            specialistCv.setProfilePhoto(
-                    Json.of(
-                            objMapper.writeValueAsString(obj.getProfilePhoto())
-                    )
-            );
+        specialistCv.setProfilePhoto(Json.of(objMapper.writeValueAsString(photo)));
+
         return specialistCv;
     }
 
