@@ -5,6 +5,7 @@ import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
 import com.bindord.jaipro.resourceserver.domain.json.Photo;
 import com.bindord.jaipro.resourceserver.domain.specialist.SpecialistCv;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvPresentationUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistExperienceUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistGalleryUpdateDto;
@@ -27,10 +28,12 @@ import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.bindord.jaipro.resourceserver.utils.Constants.ERROR_EXPERIENCE_REPEATED;
+import static com.bindord.jaipro.resourceserver.utils.Constants.RESOURCE_NOT_FOUND;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.convertJSONtoString;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.getNullPropertyNames;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.instanceObjectMapper;
@@ -55,7 +58,7 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     @Override
     public Mono<SpecialistCv> update(SpecialistCvUpdateDto entity) throws NotFoundValidationException, CustomValidationException {
         Mono<SpecialistCv> qSpecialistCv = repository.findById(entity.getId());
-        return qSpecialistCv.flatMap(qCus -> repository.save(convertToEntity(entity, qCus)));
+        return qSpecialistCv.flatMap(qCus -> repository.save(convertToEntity(entity, qCus, null)));
     }
 
     @Override
@@ -86,6 +89,14 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     @Override
     public Flux<SpecialistCv> findAllNative() {
         return repository.findAll();
+    }
+
+    @Override
+    public Mono<SpecialistCv> updatePresentation(UUID id, SpecialistCvPresentationUpdateDto specialist, String url) {
+        Mono<SpecialistCv> qSpecialistCv = repository.findById(id);
+        return qSpecialistCv
+                .switchIfEmpty(Mono.error(new CustomValidationException(RESOURCE_NOT_FOUND)))
+                .flatMap(qCus -> repository.save(convertToEntityPresentation(specialist, qCus, url)));
     }
 
     @Override
@@ -187,8 +198,17 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     }
 
     @SneakyThrows
-    private SpecialistCv convertToEntity(SpecialistCvUpdateDto obj, SpecialistCv specialistCv) {
+    private SpecialistCv convertToEntity(SpecialistCvUpdateDto obj, SpecialistCv specialistCv, String url) {
         BeanUtils.copyProperties(obj, specialistCv, getNullPropertyNames(obj));
+
+        if (!obj.isFlagUpdatePhoto())
+            return specialistCv;
+
+        if (obj.isFlagUpdatePhoto() && (Objects.isNull(url) || url.isBlank())) {
+            specialistCv.setProfilePhoto(null);
+            return specialistCv;
+        }
+
         var objMapper = instanceObjectMapper();
         if (!isEmpty(obj.getSocialNetworks()))
             specialistCv.setSocialNetworks(
@@ -211,6 +231,29 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
                             objMapper.writeValueAsString(obj.getProfilePhoto())
                     )
             );
+        return specialistCv;
+    }
+
+    @SneakyThrows
+    private SpecialistCv convertToEntityPresentation(SpecialistCvPresentationUpdateDto obj, SpecialistCv specialistCv, String url) {
+        BeanUtils.copyProperties(obj, specialistCv, getNullPropertyNames(obj));
+
+        if (!obj.isFlagUpdatePhoto())
+            return specialistCv;
+
+        if (obj.isFlagUpdatePhoto() && url.isBlank()) {
+            specialistCv.setProfilePhoto(null);
+            return specialistCv;
+        }
+
+        var photo = new Photo();
+        photo.setName(obj.getId().toString());
+        photo.setUrl(url);
+        photo.setDate(now());
+
+        var objMapper = instanceObjectMapper();
+        specialistCv.setProfilePhoto(Json.of(objMapper.writeValueAsString(photo)));
+
         return specialistCv;
     }
 

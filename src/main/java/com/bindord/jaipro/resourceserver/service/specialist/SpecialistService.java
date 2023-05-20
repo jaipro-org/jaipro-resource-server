@@ -14,4 +14,6 @@ public interface SpecialistService extends BaseService<Specialist, UUID, Special
     Flux<Specialist> findAllNative();
 
     Mono<Boolean> existsSpecialistByDocument(String document);
+
+    Mono<Specialist> updatePresentation(UUID id, SpecialistUpdateDto specialistUpdateDto);
 }

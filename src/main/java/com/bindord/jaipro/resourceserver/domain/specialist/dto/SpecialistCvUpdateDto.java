@@ -32,4 +32,10 @@ public class SpecialistCvUpdateDto {
     @Valid
     private List<Experience> experienceTimes;
 
+    private String filePhoto;
+
+    private String filePhotoExtension;
+
+    private boolean flagUpdatePhoto;
+
 }

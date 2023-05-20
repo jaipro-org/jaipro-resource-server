@@ -11,7 +11,6 @@ import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerPasswordUpd
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerUpdateDto;
 import com.bindord.jaipro.resourceserver.service.customer.CustomerService;
 import com.bindord.jaipro.resourceserver.service.gcloud.GoogleCloudService;
-import com.bindord.jaipro.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,8 +37,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("${service.ingress.context-path}/customer")
 public class CustomerController {
-
-    private final Validator validator;
 
     private final CustomerService customerService;
     private final GoogleCloudService googleCloudService;
@@ -86,8 +83,7 @@ public class CustomerController {
     @PutMapping(value = "/updateAbout",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<Customer> updateAbout(@Valid @RequestBody CustomerInformationUpdateDto customer)
-            throws NotFoundValidationException, CustomValidationException {
+    public Mono<Customer> updateAbout(@Valid @RequestBody CustomerInformationUpdateDto customer) {
         return customerService.updateAbout(customer);
     }
 
@@ -96,8 +92,7 @@ public class CustomerController {
     @PutMapping(value = "/updateLocation",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<Void> updateLocation(@Valid @RequestBody CustomerLocationUpdateDto customer)
-            throws NotFoundValidationException, CustomValidationException {
+    public Mono<Void> updateLocation(@Valid @RequestBody CustomerLocationUpdateDto customer) {
         return customerService.updateLocation(customer);
     }
 
@@ -106,8 +101,7 @@ public class CustomerController {
     @PutMapping(value = "/updatePassword",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<Void> updatePassword(@Valid @RequestBody CustomerPasswordUpdateDto customer)
-            throws NotFoundValidationException, CustomValidationException {
+    public Mono<Void> updatePassword(@Valid @RequestBody CustomerPasswordUpdateDto customer) {
         return customerService.updatePassword(customer);
     }
 
@@ -115,7 +109,7 @@ public class CustomerController {
             responseCode = "200")
     @GetMapping(value = "/{id}/information",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<CustomerInformationDto> GetInformationById(@PathVariable UUID id) throws NotFoundValidationException {
+    public Mono<CustomerInformationDto> GetInformationById(@PathVariable UUID id) {
         return customerService.GetInformation(id);
     }
 
@@ -123,20 +117,25 @@ public class CustomerController {
             responseCode = "200")
     @PostMapping(value = "/updatePhoto",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public Mono<Void> updatePhoto(@RequestPart("file") FilePart file, @RequestPart("id") String id)
-            throws NotFoundValidationException, CustomValidationException {
-        Mono<String> monoImage = uploadPhotoFile(file, id);
+    public Mono<Void> updatePhoto(@RequestPart("file") FilePart file, @RequestPart("id") String id,
+                                  @RequestPart("extension") String extension) {
+        Mono<String> monoImage = uploadPhotoFile(file, id, extension);
         return monoImage
-                .map(url -> customerService.updatePhoto(id, url))
-                .then();
+                .flatMap(url -> customerService.updatePhoto(id, url));
     }
 
-    private Mono<String> uploadPhotoFile(@RequestPart("file") FilePart file, String customerId) {
+    private Mono<String> uploadPhotoFile(@RequestPart("file") FilePart file, String customerId, String extension) {
+
         return DataBufferUtils.join(file.content())
                 .map(dataBuffer -> dataBuffer.asByteBuffer().array())
                 .map(bytes -> {
-                    String extension = file.filename().split("[.]")[1];
-                    return googleCloudService.saveCustomerPhoto(bytes, customerId, extension);
+                    if (bytes.length == 0)
+                        return googleCloudService
+                                .removeCustomerPhoto(customerId, extension).then(Mono.just(""))
+                                .then(Mono.just(""));
+
+                    return googleCloudService
+                            .saveCustomerPhoto(bytes, customerId, extension);
                 })
                 .flatMap(urlPath -> urlPath);
     }

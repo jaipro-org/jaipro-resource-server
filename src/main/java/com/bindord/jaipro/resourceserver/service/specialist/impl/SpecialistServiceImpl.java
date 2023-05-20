@@ -44,6 +44,13 @@ public class SpecialistServiceImpl implements SpecialistService {
         return repository.existsSpecialistByDocument(document);
     }
 
+    @Override
+    public Mono<Specialist> updatePresentation(UUID id, SpecialistUpdateDto specialistUpdateDto) {
+        Mono<Specialist> qSpecialist = repository.findById(id);
+        return qSpecialist
+                .flatMap(qCus -> repository.save(convertToEntity(specialistUpdateDto, qCus)));
+    }
+
     private <T> Mono<T> close(Connection connection) {
         return Mono.from(connection.close())
                 .then(Mono.empty());
