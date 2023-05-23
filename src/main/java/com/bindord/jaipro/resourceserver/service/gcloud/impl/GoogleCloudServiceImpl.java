@@ -63,7 +63,7 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
                 .replace("[ID]", specialistId.toString())
                 .replace("[FILENAME]", fileName);
 
-        return SaveFile(file, path);
+        return SaveFileForGallery(file, path);
     }
 
     @Override
@@ -92,6 +92,15 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
         return getStorage()
                 .map(storage -> storage.create(blobInfo, file))
                 .then(Mono.just(URL_AUTENTICADA.concat(path)));
+    }
+
+    private Mono<String> SaveFileForGallery(byte[] file, String path) {
+        BlobId blobId = BlobId.of(BUCKET, path);
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
+
+        return getStorage()
+                .map(storage -> storage.create(blobInfo, file))
+                .then(Mono.just(URL_AUTENTICADA.concat("/" + path)));
     }
 
     private Mono<Void> removeFile(String path) {
