@@ -57,6 +57,11 @@ public class SpecialistSpecializationServiceImpl implements SpecialistSpecializa
     }
 
     @Override
+    public Mono<Void> deleteByIdAndProfessionId(UUID id, Integer professionId) {
+        return repository.deleteBySpecialistIdAndProfessionId(id, professionId);
+    }
+
+    @Override
     public Flux<SpecialistSpecialization> findAll() {
         return repository.findAll();
     }
@@ -68,7 +73,7 @@ public class SpecialistSpecializationServiceImpl implements SpecialistSpecializa
 
     @Override
     public Flux<SpecialistSpecialization> saveAll(Iterable<SpecialistSpecialization> specialistSpecializations) {
-        specialistSpecializations.forEach(e->e.setNew(true));
+        specialistSpecializations.forEach(e -> e.setNew(true));
         return repository.saveAll(specialistSpecializations);
     }
 

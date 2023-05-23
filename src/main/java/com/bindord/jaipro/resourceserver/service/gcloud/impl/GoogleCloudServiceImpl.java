@@ -28,6 +28,7 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
 
     @Value("${spring.gcp.storage.bucket}")
     private String BUCKET;
+
     @Value("${spring.gcp.storage.url-autenticada}")
     private String URL_AUTENTICADA;
 

@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -107,6 +108,14 @@ public class SpecialistCvController {
             consumes = {MediaType.APPLICATION_JSON_VALUE})
     public Mono<Experience> persistExperience(@PathVariable UUID id, @Valid @RequestBody Experience experience) {
         return specialistCvService.saveExperience(id, experience);
+    }
+
+    @ApiResponse(description = "Delete an experience of specialist cv", responseCode = "200")
+    @DeleteMapping(value = "/{id}/experience/{professionId}",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public Mono<Void> deleteExperienceByIdAndProfessionId(
+            @PathVariable UUID id, @PathVariable Integer professionId) throws NotFoundValidationException {
+        return specialistCvService.deleteExperienceByIdAndProfessionId(id, professionId);
     }
 
     @ApiResponse(description = "Update gallery to specialist cv",

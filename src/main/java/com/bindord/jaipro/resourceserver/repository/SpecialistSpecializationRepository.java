@@ -4,6 +4,7 @@ import com.bindord.jaipro.resourceserver.domain.specialist.SpecialistSpecializat
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
@@ -11,4 +12,6 @@ import java.util.UUID;
 public interface SpecialistSpecializationRepository extends ReactiveCrudRepository<SpecialistSpecialization, UUID> {
 
     Flux<SpecialistSpecialization> findAllByProfessionId(int ProfessionId);
+
+    Mono<Void> deleteBySpecialistIdAndProfessionId(UUID id, Integer professionId);
 }

@@ -103,7 +103,7 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     public Mono<Void> updateExperience(UUID id, SpecialistExperienceUpdateDto entity) {
         Mono<SpecialistCv> qSpecialistCv = repository.findById(id);
         return qSpecialistCv.flatMap(qScv -> {
-            var experiences = convertJsonToClass(qScv.getExperienceTimes());
+            var experiences = convertJsonToListExperience(qScv.getExperienceTimes());
             var experience = experiences.get(entity.getIndex());
             experience.setTime(entity.getTime());
             experiences.set(entity.getIndex(), experience);
@@ -117,7 +117,7 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     public Mono<Experience> saveExperience(UUID id, Experience experience) {
         Mono<SpecialistCv> qSpecialistCv = repository.findById(id);
         return qSpecialistCv.flatMap(qScv -> {
-            var experiences = convertJsonToClass(qScv.getExperienceTimes());
+            var experiences = convertJsonToListExperience(qScv.getExperienceTimes());
             if (experiences.stream().anyMatch(exp -> exp.getProfessionId().equals(experience.getProfessionId()))) {
                 return Mono.error(new CustomValidationException(ERROR_EXPERIENCE_REPEATED));
             }
@@ -127,6 +127,26 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
             qScv.setExperienceTimes(Json.of(convertJSONtoString(experiences)));
             return repository.save(qScv).then(Mono.just(experience));
         });
+    }
+
+    @Override
+    public Mono<Void> deleteExperienceByIdAndProfessionId(UUID id, Integer professionId) throws NotFoundValidationException {
+        return this.findOne(id).flatMap(entity ->
+                extracted(professionId, entity).flatMap(repository::save)
+                        .then());
+    }
+
+    @SneakyThrows
+    private Mono<SpecialistCv> extracted(Integer professionId, SpecialistCv entity) {
+        var experiences = convertJsonToListExperience(entity.getExperienceTimes());
+        var wasRemoved = experiences.removeIf(ele -> ele.getProfessionId().equals(professionId));
+        if (!wasRemoved) {
+            return Mono.empty();
+        }
+        entity.setExperienceTimes(Json.of(
+                instanceObjectMapper().writeValueAsString(experiences)
+        ));
+        return Mono.just(entity);
     }
 
     @Override
@@ -182,7 +202,7 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     }
 
     @SneakyThrows
-    private List<Experience> convertJsonToClass(Json json) {
+    private List<Experience> convertJsonToListExperience(Json json) {
         var objectMapper = instanceObjectMapper();
 
         return objectMapper.readValue(json.asString(), new TypeReference<>() {

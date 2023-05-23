@@ -9,7 +9,6 @@ import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
@@ -20,7 +19,7 @@ import java.util.UUID;
 public class SpecialistSpecialization implements Persistable<UUID> {
 
     @Id
-    @Column
+    @Column()
     private UUID specialistId;
 
     @NotNull
