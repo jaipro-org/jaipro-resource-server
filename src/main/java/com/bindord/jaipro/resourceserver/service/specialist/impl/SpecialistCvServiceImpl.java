@@ -5,6 +5,7 @@ import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
 import com.bindord.jaipro.resourceserver.domain.json.Photo;
 import com.bindord.jaipro.resourceserver.domain.specialist.SpecialistCv;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvPresentationUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistExperienceUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistGalleryUpdateDto;
@@ -12,8 +13,8 @@ import com.bindord.jaipro.resourceserver.domain.specialist.json.Experience;
 import com.bindord.jaipro.resourceserver.repository.SpecialistCvRepository;
 import com.bindord.jaipro.resourceserver.service.gcloud.GoogleCloudService;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecialistCvService;
+import com.bindord.jaipro.resourceserver.utils.Constants;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.r2dbc.postgresql.codec.Json;
 import io.r2dbc.spi.Connection;
 import lombok.AllArgsConstructor;
@@ -25,16 +26,18 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.bindord.jaipro.resourceserver.utils.Constants.ERROR_EXPERIENCE_REPEATED;
-import static com.bindord.jaipro.resourceserver.utils.Constants.MAX_GALLERY_FILES;
+import static com.bindord.jaipro.resourceserver.utils.Constants.RESOURCE_NOT_FOUND;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.convertJSONtoString;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.getNullPropertyNames;
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.instanceObjectMapper;
+import static com.bindord.jaipro.resourceserver.utils.Utilitarios.serializeObject;
 import static java.time.LocalDateTime.now;
 import static java.util.Objects.isNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -55,7 +58,7 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     @Override
     public Mono<SpecialistCv> update(SpecialistCvUpdateDto entity) throws NotFoundValidationException, CustomValidationException {
         Mono<SpecialistCv> qSpecialistCv = repository.findById(entity.getId());
-        return qSpecialistCv.flatMap(qCus -> repository.save(convertToEntity(entity, qCus)));
+        return qSpecialistCv.flatMap(qCus -> repository.save(convertToEntity(entity, qCus, null)));
     }
 
     @Override
@@ -89,10 +92,18 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     }
 
     @Override
+    public Mono<SpecialistCv> updatePresentation(UUID id, SpecialistCvPresentationUpdateDto specialist, String url) {
+        Mono<SpecialistCv> qSpecialistCv = repository.findById(id);
+        return qSpecialistCv
+                .switchIfEmpty(Mono.error(new CustomValidationException(RESOURCE_NOT_FOUND)))
+                .flatMap(qCus -> repository.save(convertToEntityPresentation(specialist, qCus, url)));
+    }
+
+    @Override
     public Mono<Void> updateExperience(UUID id, SpecialistExperienceUpdateDto entity) {
         Mono<SpecialistCv> qSpecialistCv = repository.findById(id);
         return qSpecialistCv.flatMap(qScv -> {
-            var experiences = convertJsonToClass(qScv.getExperienceTimes());
+            var experiences = convertJsonToListExperience(qScv.getExperienceTimes());
             var experience = experiences.get(entity.getIndex());
             experience.setTime(entity.getTime());
             experiences.set(entity.getIndex(), experience);
@@ -106,7 +117,7 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     public Mono<Experience> saveExperience(UUID id, Experience experience) {
         Mono<SpecialistCv> qSpecialistCv = repository.findById(id);
         return qSpecialistCv.flatMap(qScv -> {
-            var experiences = convertJsonToClass(qScv.getExperienceTimes());
+            var experiences = convertJsonToListExperience(qScv.getExperienceTimes());
             if (experiences.stream().anyMatch(exp -> exp.getProfessionId().equals(experience.getProfessionId()))) {
                 return Mono.error(new CustomValidationException(ERROR_EXPERIENCE_REPEATED));
             }
@@ -119,72 +130,105 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     }
 
     @Override
-    public Flux<Photo> updateGallery(SpecialistGalleryUpdateDto entity) {
-        Mono<SpecialistCv> qSpecialistCv = repository.findById(entity.getSpecialistCvId());
-        return qSpecialistCv.map(qScv -> {
-            try {
-                List<Photo> gallery = convertJsonToClassPhoto(qScv.getGallery());
-                for (String url : entity.getFilesRemove()) {
-                    gallery.removeIf(x -> x.getUrl().equals(url));
-                }
+    public Mono<Void> deleteExperienceByIdAndProfessionId(UUID id, Integer professionId) throws NotFoundValidationException {
+        return this.findOne(id).flatMap(entity ->
+                extracted(professionId, entity).flatMap(repository::save)
+                        .then());
+    }
 
-                for (var file : entity.getFiles()) {
-                    byte[] bytes = getBytesToFilePart(file).block();
-                    var url = googleCloudService.saveSpecialistGallery(bytes, entity.getSpecialistCvId(), file.filename());
+    @SneakyThrows
+    private Mono<SpecialistCv> extracted(Integer professionId, SpecialistCv entity) {
+        var experiences = convertJsonToListExperience(entity.getExperienceTimes());
+        var wasRemoved = experiences.removeIf(ele -> ele.getProfessionId().equals(professionId));
+        if (!wasRemoved) {
+            return Mono.empty();
+        }
+        entity.setExperienceTimes(Json.of(
+                instanceObjectMapper().writeValueAsString(experiences)
+        ));
+        return Mono.just(entity);
+    }
 
-                    Photo photo = new Photo();
-                    photo.setDate(now());
-                    photo.setName(file.filename());
-                    photo.setSize(0);
-                    photo.setUrl(url.block());
+    @Override
+    public Mono<SpecialistCv> updateGallery(List<FilePart> images, SpecialistGalleryUpdateDto entity) {
 
-                    gallery.add(photo);
-                }
+        Mono<SpecialistCv> qSpecialistCv = repository.findById(entity.getSpecialistId());
+        return qSpecialistCv.flatMap(qScv -> {
+            List<Photo> gallery = qScv.getGallery() == null
+                    ? Collections.emptyList() : convertJsonToClassPhoto(qScv.getGallery());
+            List<Photo> finalGallery = gallery.stream()
+                    .filter(gall ->
+                            !entity.getFileIdsToRemove().contains(gall.getUrl()))
+                    .collect(Collectors.toList());
 
-                if (gallery.size() > MAX_GALLERY_FILES) {
-                    throw new Exception("La cantidad de imagenes es superior a la esperada");
-                }
-
-                ObjectMapper objMapper = instanceObjectMapper();
-                qScv.setGallery(Json.of(objMapper.writeValueAsString(gallery)));
-                repository.save(qScv);
-
-                return gallery;
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            if (images.size() + finalGallery.size() > Constants.MAX_GALLERY_FILES) {
+                return Mono.error(new CustomValidationException(
+                        "Ha excedido el numero maximo de archivos permitidos para subir a la galeria. Maximo 6."));
             }
-        }).flatMapIterable(g -> g);
+
+            return Flux.fromIterable(images)
+                    .flatMap(nwPhoto -> getBytesToFilePart(nwPhoto)
+                            .flatMap(photoBytes -> googleCloudService.saveSpecialistGallery(photoBytes,
+                                    entity.getSpecialistId(),
+                                    nwPhoto.filename())
+                            ).flatMap(urlOutput -> {
+                                Photo photo = new Photo();
+                                photo.setDate(now());
+                                photo.setName(nwPhoto.filename());
+                                photo.setSize(0);
+                                photo.setUrl(urlOutput);
+                                return Mono.just(photo);
+                            }))
+                    .collectList()
+                    .flatMap(
+                            photos -> {
+                                finalGallery.addAll(photos);
+                                return saveSpecialistGallery(finalGallery, qScv);
+                            });
+        });
+    }
+
+    private Mono<SpecialistCv> saveSpecialistGallery(List<Photo> gallery, SpecialistCv qSvc) {
+        qSvc.setGallery(Json.of(serializeObject(gallery)));
+        return repository.save(qSvc);
     }
 
     private Flux<Integer> sizeFile(FilePart file) {
         return file.content() // for one file, is a Flux with one element
                 .map(dataBuffer -> {
                     byte[] bytes = new byte[dataBuffer.readableByteCount()];
-                    Integer sizeBytes = bytes.length;
-                    return sizeBytes;
+                    return bytes.length;
                 });
     }
 
     @SneakyThrows
-    private List<Experience> convertJsonToClass(Json json) {
+    private List<Experience> convertJsonToListExperience(Json json) {
         var objectMapper = instanceObjectMapper();
 
-        List<Experience> participantJsonList = objectMapper.readValue(json.asString(), new TypeReference<List<Experience>>() {
+        return objectMapper.readValue(json.asString(), new TypeReference<>() {
         });
-        return participantJsonList;
-    }
-
-    private List<Photo> convertJsonToClassPhoto(Json json) throws IOException {
-        var objectMapper = instanceObjectMapper();
-
-        List<Photo> photos = objectMapper.readValue(json.asString(), new TypeReference<List<Photo>>() {
-        });
-        return photos;
     }
 
     @SneakyThrows
-    private SpecialistCv convertToEntity(SpecialistCvUpdateDto obj, SpecialistCv specialistCv) {
+    private List<Photo> convertJsonToClassPhoto(Json json) {
+        var objectMapper = instanceObjectMapper();
+
+        return objectMapper.readValue(json.asString(), new TypeReference<>() {
+        });
+    }
+
+    @SneakyThrows
+    private SpecialistCv convertToEntity(SpecialistCvUpdateDto obj, SpecialistCv specialistCv, String url) {
         BeanUtils.copyProperties(obj, specialistCv, getNullPropertyNames(obj));
+
+        if (!obj.isFlagUpdatePhoto())
+            return specialistCv;
+
+        if (obj.isFlagUpdatePhoto() && (Objects.isNull(url) || url.isBlank())) {
+            specialistCv.setProfilePhoto(null);
+            return specialistCv;
+        }
+
         var objMapper = instanceObjectMapper();
         if (!isEmpty(obj.getSocialNetworks()))
             specialistCv.setSocialNetworks(
@@ -210,6 +254,29 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
         return specialistCv;
     }
 
+    @SneakyThrows
+    private SpecialistCv convertToEntityPresentation(SpecialistCvPresentationUpdateDto obj, SpecialistCv specialistCv, String url) {
+        BeanUtils.copyProperties(obj, specialistCv, getNullPropertyNames(obj));
+
+        if (!obj.isFlagUpdatePhoto())
+            return specialistCv;
+
+        if (obj.isFlagUpdatePhoto() && url.isBlank()) {
+            specialistCv.setProfilePhoto(null);
+            return specialistCv;
+        }
+
+        var photo = new Photo();
+        photo.setName(obj.getId().toString());
+        photo.setUrl(url);
+        photo.setDate(now());
+
+        var objMapper = instanceObjectMapper();
+        specialistCv.setProfilePhoto(Json.of(objMapper.writeValueAsString(photo)));
+
+        return specialistCv;
+    }
+
     private SpecialistCv convertToEntityForNewCase(SpecialistCvDto obj) {
         obj.getExperienceTimes().forEach(exp -> exp.setDate(now()));
 
@@ -223,26 +290,30 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     @SneakyThrows
     private void serializeJsonColumns(SpecialistCv specialistCv, SpecialistCvDto obj) {
         var objMapper = instanceObjectMapper();
-        specialistCv.setSocialNetworks(
-                Json.of(
-                        objMapper.writeValueAsString(obj.getSocialNetworks())
-                )
-        );
-        specialistCv.setGallery(
-                Json.of(
-                        objMapper.writeValueAsString(obj.getGallery())
-                )
-        );
-        specialistCv.setProfilePhoto(
-                Json.of(
-                        objMapper.writeValueAsString(obj.getProfilePhoto())
-                )
-        );
-        specialistCv.setExperienceTimes(
-                Json.of(
-                        objMapper.writeValueAsString(obj.getExperienceTimes())
-                )
-        );
+        if (!isEmpty(obj.getSocialNetworks()))
+            specialistCv.setSocialNetworks(
+                    Json.of(
+                            objMapper.writeValueAsString(obj.getSocialNetworks())
+                    )
+            );
+        if (!isEmpty(obj.getGallery()))
+            specialistCv.setGallery(
+                    Json.of(
+                            objMapper.writeValueAsString(obj.getGallery())
+                    )
+            );
+        if (!isNull(obj.getProfilePhoto()))
+            specialistCv.setProfilePhoto(
+                    Json.of(
+                            objMapper.writeValueAsString(obj.getProfilePhoto())
+                    )
+            );
+        if (!isEmpty(obj.getExperienceTimes()))
+            specialistCv.setExperienceTimes(
+                    Json.of(
+                            objMapper.writeValueAsString(obj.getExperienceTimes())
+                    )
+            );
     }
 
     private Mono<byte[]> getBytesToFilePart(FilePart file) {

@@ -6,12 +6,12 @@ import com.bindord.jaipro.resourceserver.domain.specialist.SpecialistSpecializat
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistSpecializationDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistSpecializationUpdateDto;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecialistSpecializationService;
-import com.bindord.jaipro.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,8 +32,6 @@ import java.util.UUID;
 @RequestMapping("${service.ingress.context-path}/specialist-specialization")
 @Validated
 public class SpecialistSpecializationController {
-
-    private final Validator validator;
 
     private final SpecialistSpecializationService specialistSpecializationService;
 
@@ -72,6 +70,22 @@ public class SpecialistSpecializationController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public Flux<SpecialistSpecialization> findAll() {
         return specialistSpecializationService.findAll();
+    }
+
+    @ApiResponse(description = "Delete specialist specializations " +
+            "by specialistId", responseCode = "200")
+    @DeleteMapping(value = "/{id}",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public Mono<Void> deleteById(@PathVariable UUID id) {
+        return specialistSpecializationService.delete(id);
+    }
+
+    @ApiResponse(description = "Delete specialist specializations " +
+            "by specialistId", responseCode = "200")
+    @DeleteMapping(value = "/{id}/profession/{professionId}",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public Mono<Void> deleteByIdAndProfessionId(@PathVariable UUID id, @PathVariable Integer professionId) {
+        return specialistSpecializationService.deleteByIdAndProfessionId(id, professionId);
     }
 
     @ApiResponse(description = "FindAll by SpecialistId",

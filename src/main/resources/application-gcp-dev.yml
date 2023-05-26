@@ -23,7 +23,7 @@ spring:
   # GCP Cloud Storage
   gcp:
     storage:
-      url-autenticada: https://storage.cloud.google.com/jaipro
+      url-autenticada: https://storage.googleapis.com/jaipro/
       save: jaipro/specialist/{0}/photo/{1}
       bucket: jaipro
       project-id: pure-anthem-382602
@@ -40,3 +40,7 @@ internal:
 
 logging:
   config: classpath:log4j2-dev-spring.xml
+  level:
+    io.r2dbc.postgresql.client: ERROR # for database initialization
+    io.r2dbc.postgresql.QUERY: ERROR # for queries
+    io.r2dbc.postgresql.PARAM: ERROR # for parameters

@@ -28,6 +28,7 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
 
     @Value("${spring.gcp.storage.bucket}")
     private String BUCKET;
+
     @Value("${spring.gcp.storage.url-autenticada}")
     private String URL_AUTENTICADA;
 
@@ -37,10 +38,9 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
     @Override
     public Mono<String> saveCustomerPhoto(byte[] file, String customerId, String extension) {
 
-        String customerIdStr = customerId;
         String path = CUSTOMER_PHOTO_PATH
-                            .replace("[FILENAME]", customerIdStr)
-                            .replace("[EXTENSION]", extension);
+                .replace("[FILENAME]", customerId)
+                .replace("[EXTENSION]", extension);
 
         return SaveFile(file, path);
     }
@@ -50,9 +50,9 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
 
         String specialistIdStr = specialistId.toString();
         String path = SPECIALIST_PHOTO_PATH
-                            .replace("[ID]", specialistIdStr)
-                            .replace("[FILENAME]", specialistIdStr)
-                            .replace("[EXTENSION]", extension);
+                .replace("[ID]", specialistIdStr)
+                .replace("[FILENAME]", specialistIdStr)
+                .replace("[EXTENSION]", extension);
 
         return SaveFile(file, path);
     }
@@ -61,9 +61,29 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
     public Mono<String> saveSpecialistGallery(byte[] file, UUID specialistId, String fileName) {
 
         String path = SPECIALIST_GALLERY_PATH
-                            .replace("[FILENAME]", fileName);
+                .replace("[ID]", specialistId.toString())
+                .replace("[FILENAME]", fileName);
 
         return SaveFile(file, path);
+    }
+
+    @Override
+    public Mono<Void> removeCustomerPhoto(String customerId, String extension) {
+        String path = CUSTOMER_PHOTO_PATH
+                .replace("[FILENAME]", customerId)
+                .replace("[EXTENSION]", extension);
+
+        return removeFile(path);
+    }
+
+    @Override
+    public Mono<Void> removeSpecialistPhoto(String specialistId, String extension) {
+        String path = SPECIALIST_PHOTO_PATH
+                .replace("[ID]", specialistId)
+                .replace("[FILENAME]", specialistId)
+                .replace("[EXTENSION]", extension);
+
+        return removeFile(path);
     }
 
     private Mono<String> SaveFile(byte[] file, String path) {
@@ -71,8 +91,15 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
 
         return getStorage()
-                    .map(storage -> storage.create(blobInfo, file))
-                    .then(Mono.just(URL_AUTENTICADA.concat(path)));
+                .map(storage -> storage.create(blobInfo, file))
+                .then(Mono.just(URL_AUTENTICADA.concat(path)));
+    }
+
+    private Mono<Void> removeFile(String path) {
+        BlobId blobId = BlobId.of(BUCKET, path);
+        return getStorage()
+                .map(x -> x.delete(blobId))
+                .then(Mono.empty());
     }
 
     private Mono<Storage> getStorage() {

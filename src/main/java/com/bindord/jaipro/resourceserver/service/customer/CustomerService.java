@@ -7,7 +7,6 @@ import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerInformation
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerLocationUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerPasswordUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerUpdateDto;
-import com.bindord.jaipro.resourceserver.domain.customer.dto.CustomerUpdatePhotoDto;
 import com.bindord.jaipro.resourceserver.generic.BaseService;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;

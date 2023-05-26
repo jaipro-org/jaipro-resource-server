@@ -6,17 +6,12 @@ import com.bindord.jaipro.resourceserver.domain.specialist.Specialist;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistSearchDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistUpdateDto;
-import com.bindord.jaipro.resourceserver.service.gcloud.GoogleCloudService;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecialistService;
 import com.bindord.jaipro.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Base64;
-import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.MediaType;
-import org.springframework.http.codec.multipart.FilePart;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,9 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -43,8 +36,6 @@ public class SpecialistController {
 
     private final SpecialistService specialistService;
 
-    private final GoogleCloudService googleCloudService;
-
     @ApiResponse(description = "Persist a specialist",
             responseCode = "200")
     @PostMapping(value = "",
@@ -57,13 +48,12 @@ public class SpecialistController {
 
     @ApiResponse(description = "Update a specialist",
             responseCode = "200")
-    @PutMapping(value = "",
+    @PutMapping(value = "/{id}",
             produces = {MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<Specialist> update(@Valid @RequestBody SpecialistUpdateDto specialist)
+    public Mono<Specialist> update(@PathVariable UUID id, @Valid @RequestBody SpecialistUpdateDto specialist)
             throws NotFoundValidationException, CustomValidationException {
-        return Mono.zip(specialistService.update(specialist), uploadFile(specialist.getFile(), specialist.getId()))
-                .flatMap(t -> Mono.just(t.getT1()));
+        return specialistService.updatePresentation(id, specialist);
     }
 
     @ApiResponse(description = "List specialists",
@@ -96,23 +86,5 @@ public class SpecialistController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public Mono<Boolean> existsSpecialistByDocument(@RequestParam String document) throws NotFoundValidationException {
         return specialistService.existsSpecialistByDocument(document);
-    }
-    private Mono<String> uploadFile(String file, UUID specialistId){
-        try{
-            byte[] data = Base64.decodeBase64(file);
-
-            return googleCloudService
-                    .saveSpecialistPhoto(data, specialistId, ".png");
-
-            /*return DataBufferUtils.join(file.content())
-                    .map(dataBuffer -> dataBuffer.asByteBuffer().array())
-                    .map(x -> {
-                        String extension = file.filename().split("[.]")[1];
-                        return googleCloudService.saveSpecialistPhoto(x, specialistId, extension);
-                    })
-                    .flatMap(x-> x);*/
-        }catch (Exception ex){
-            return Mono.just(ex.getMessage());
-        }
     }
 }
