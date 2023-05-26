@@ -2,6 +2,8 @@ package com.bindord.jaipro.resourceserver.service.specialist;
 
 import com.bindord.jaipro.resourceserver.domain.specialist.Specialist;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistFiltersSearchDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistResultSearchDTO;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistUpdateDto;
 import com.bindord.jaipro.resourceserver.generic.BaseService;
 import reactor.core.publisher.Flux;
@@ -16,4 +18,6 @@ public interface SpecialistService extends BaseService<Specialist, UUID, Special
     Mono<Boolean> existsSpecialistByDocument(String document);
 
     Mono<Specialist> updatePresentation(UUID id, SpecialistUpdateDto specialistUpdateDto);
+
+    Flux<SpecialistResultSearchDTO> searchSpecialist(SpecialistFiltersSearchDto filters);
 }

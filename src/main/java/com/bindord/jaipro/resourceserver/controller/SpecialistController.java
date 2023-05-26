@@ -4,7 +4,8 @@ import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
 import com.bindord.jaipro.resourceserver.domain.specialist.Specialist;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistDto;
-import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistSearchDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistFiltersSearchDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistResultSearchDTO;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistUpdateDto;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecialistService;
 import com.bindord.jaipro.resourceserver.validator.Validator;
@@ -13,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -76,8 +78,8 @@ public class SpecialistController {
             responseCode = "200")
     @GetMapping(value = "/search",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Flux<Specialist> search(@Valid @RequestBody SpecialistSearchDto specialistSearchDto) throws NotFoundValidationException {
-        return Flux.just(new Specialist());
+    public Flux<SpecialistResultSearchDTO> search(@Valid SpecialistFiltersSearchDto specialistFiltersSearchDto) throws NotFoundValidationException {
+        return specialistService.searchSpecialist(specialistFiltersSearchDto);
     }
 
     @ApiResponse(description = "Verify if specialist exists",
