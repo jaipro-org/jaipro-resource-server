@@ -34,6 +34,6 @@ public class SpecialistUpdateDto {
     @Schema(example = "1")
     private Integer districtId;
 
-    private FilePart file;
+    private String file;
 
 }

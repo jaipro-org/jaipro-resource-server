@@ -4,6 +4,8 @@ import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
 import com.bindord.jaipro.resourceserver.domain.specialist.Specialist;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistFiltersSearchDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistResultSearchDTO;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistUpdateDto;
 import com.bindord.jaipro.resourceserver.repository.SpecialistRepository;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecialistService;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -49,6 +52,15 @@ public class SpecialistServiceImpl implements SpecialistService {
         Mono<Specialist> qSpecialist = repository.findById(id);
         return qSpecialist
                 .flatMap(qCus -> repository.save(convertToEntity(specialistUpdateDto, qCus)));
+    }
+
+    @Override
+    public Flux<SpecialistResultSearchDTO> searchSpecialist(SpecialistFiltersSearchDto filters) {
+        String p_idCategories = generateStrPostgreArrayByList(filters.getCategories());
+        String p_idSpecializations = generateStrPostgreArrayByList(filters.getSpecialties());
+        String p_idUbigeums = generateStrPostgreArrayByList(filters.getDistricts());
+
+        return repository.searchSpecialist(p_idCategories, p_idSpecializations, p_idUbigeums, filters.getPage(), filters.getPageSize());
     }
 
     private <T> Mono<T> close(Connection connection) {
@@ -87,5 +99,10 @@ public class SpecialistServiceImpl implements SpecialistService {
         BeanUtils.copyProperties(obj, specialist);
         specialist.setNew(true);
         return specialist;
+    }
+
+    private String generateStrPostgreArrayByList(List<Integer> list){
+        String p_list = (list == null || list.isEmpty()) ? "" : "{" + String.join(",", list.stream().map(String::valueOf).toArray(String[]::new)) + "}";
+        return p_list;
     }
 }
