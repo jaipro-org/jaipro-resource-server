@@ -10,7 +10,6 @@ import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistUpdateD
 import com.bindord.jaipro.resourceserver.repository.SpecialistRepository;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecialistService;
 import com.bindord.jaipro.resourceserver.utils.Utilitarios;
-import io.r2dbc.spi.Connection;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -56,16 +55,11 @@ public class SpecialistServiceImpl implements SpecialistService {
 
     @Override
     public Flux<SpecialistResultSearchDTO> searchSpecialist(SpecialistFiltersSearchDto filters) {
-        String p_idCategories = generateStrPostgreArrayByList(filters.getCategories());
-        String p_idSpecializations = generateStrPostgreArrayByList(filters.getSpecialties());
-        String p_idUbigeums = generateStrPostgreArrayByList(filters.getDistricts());
+        String paramIdCategories = generateStrPostgreArrayByList(filters.getCategories());
+        String paramSpecializations = generateStrPostgreArrayByList(filters.getSpecialties());
+        String paramUbigeums = generateStrPostgreArrayByList(filters.getDistricts());
 
-        return repository.searchSpecialist(p_idCategories, p_idSpecializations, p_idUbigeums, filters.getPage(), filters.getPageSize());
-    }
-
-    private <T> Mono<T> close(Connection connection) {
-        return Mono.from(connection.close())
-                .then(Mono.empty());
+        return repository.searchSpecialist(paramIdCategories, paramSpecializations, paramUbigeums, filters.getPageNumber(), filters.getPageSize());
     }
 
     @Override
