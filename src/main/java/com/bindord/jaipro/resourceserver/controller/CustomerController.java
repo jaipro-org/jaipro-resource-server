@@ -117,7 +117,7 @@ public class CustomerController {
             responseCode = "200")
     @PostMapping(value = "/updatePhoto",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public Mono<Void> updatePhoto(@RequestPart("file") FilePart file, @RequestPart("id") String id,
+    public Mono<Void> updatePhoto(@RequestPart(name = "file", required = false) FilePart file, @RequestPart("id") String id,
                                   @RequestPart("extension") String extension) {
         Mono<String> monoImage = uploadPhotoFile(file, id, extension);
         return monoImage

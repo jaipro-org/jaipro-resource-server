@@ -23,6 +23,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,6 +55,14 @@ public class SpecialistSpecializationController {
         return specialistSpecializationService.saveAll(specialistSpecializations);
     }
 
+    @ApiResponse(description = "Delete some specialistSpecializations associated to a specific profession",
+            responseCode = "200")
+    @PostMapping(value = "/delete/list",
+            consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public Mono<Void> deleteMany(@RequestBody @NotEmpty List<@Valid SpecialistSpecialization> specialistSpecializations) {
+        return specialistSpecializationService.deleteManyByProfessionIdAndSpecializationId(specialistSpecializations);
+    }
+
     @ApiResponse(description = "Update a specialistSpecialization",
             responseCode = "200")
     @PutMapping(value = "",
@@ -80,11 +89,11 @@ public class SpecialistSpecializationController {
         return specialistSpecializationService.delete(id);
     }
 
-    @ApiResponse(description = "Delete specialist specializations " +
-            "by specialistId", responseCode = "200")
+    @ApiResponse(description = "Delete all specialist specializations " +
+            "by specialistId and professionId", responseCode = "200")
     @DeleteMapping(value = "/{id}/profession/{professionId}",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<Void> deleteByIdAndProfessionId(@PathVariable UUID id, @PathVariable Integer professionId) {
+    public Mono<Void> deleteAllByIdAndProfessionId(@PathVariable UUID id, @PathVariable Integer professionId) {
         return specialistSpecializationService.deleteByIdAndProfessionId(id, professionId);
     }
 

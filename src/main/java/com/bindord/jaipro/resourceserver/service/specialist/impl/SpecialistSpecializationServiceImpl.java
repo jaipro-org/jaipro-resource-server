@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.bindord.jaipro.resourceserver.utils.Utilitarios.getNullPropertyNames;
 
@@ -75,6 +76,20 @@ public class SpecialistSpecializationServiceImpl implements SpecialistSpecializa
     public Flux<SpecialistSpecialization> saveAll(Iterable<SpecialistSpecialization> specialistSpecializations) {
         specialistSpecializations.forEach(e -> e.setNew(true));
         return repository.saveAll(specialistSpecializations);
+    }
+
+    @Override
+    public Mono<Void> deleteManyByProfessionIdAndSpecializationId(List<SpecialistSpecialization> specialistSpecializations) {
+        var specialistId = specialistSpecializations.get(0).getSpecialistId();
+
+        return repository.deleteBySpecialistIdAndSpecializationIdIn(
+                specialistId,
+                specialistSpecializations
+                        .stream()
+                        .mapToInt(SpecialistSpecialization::getSpecializationId)
+                        .boxed()
+                        .collect(Collectors.toList())
+        );
     }
 
     @Override
