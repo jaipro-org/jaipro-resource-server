@@ -169,8 +169,10 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     private Customer mapperPhoto(String id, String urlSource, Customer entity) {
-        if (urlSource.isBlank())
+        if (urlSource.isBlank()){
+            entity.setProfilePhoto(null);
             return entity;
+        }
 
         Photo photo = new Photo();
         photo.setName(id);

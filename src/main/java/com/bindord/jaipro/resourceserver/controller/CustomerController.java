@@ -124,19 +124,16 @@ public class CustomerController {
                 .flatMap(url -> customerService.updatePhoto(id, url));
     }
 
-    private Mono<String> uploadPhotoFile(@RequestPart("file") FilePart file, String customerId, String extension) {
+    private Mono<String> uploadPhotoFile(FilePart file, String customerId, String extension) {
+
+        if(file == null)
+            return googleCloudService
+                    .removeCustomerPhoto(customerId, extension).then(Mono.just(""))
+                    .then(Mono.just(""));
 
         return DataBufferUtils.join(file.content())
                 .map(dataBuffer -> dataBuffer.asByteBuffer().array())
-                .map(bytes -> {
-                    if (bytes.length == 0)
-                        return googleCloudService
-                                .removeCustomerPhoto(customerId, extension).then(Mono.just(""))
-                                .then(Mono.just(""));
-
-                    return googleCloudService
-                            .saveCustomerPhoto(bytes, customerId, extension);
-                })
+                .map(bytes -> googleCloudService.saveCustomerPhoto(bytes, customerId, extension))
                 .flatMap(urlPath -> urlPath);
     }
 }
