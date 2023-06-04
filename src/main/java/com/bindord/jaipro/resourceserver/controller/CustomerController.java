@@ -117,26 +117,23 @@ public class CustomerController {
             responseCode = "200")
     @PostMapping(value = "/updatePhoto",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public Mono<Void> updatePhoto(@RequestPart(name = "file", required = false) FilePart file, @RequestPart("id") String id,
-                                  @RequestPart("extension") String extension) {
+    public Mono<Void> updatePhoto(@RequestPart(value = "file", required = false) FilePart file, @RequestPart("id") String id,
+                                  @RequestPart(value = "extension") String extension) {
         Mono<String> monoImage = uploadPhotoFile(file, id, extension);
         return monoImage
                 .flatMap(url -> customerService.updatePhoto(id, url));
     }
 
-    private Mono<String> uploadPhotoFile(@RequestPart("file") FilePart file, String customerId, String extension) {
+    private Mono<String> uploadPhotoFile(FilePart file, String customerId, String extension) {
+
+        if(file == null)
+            return googleCloudService
+                    .removeCustomerPhoto(customerId, extension).then(Mono.just(""))
+                    .then(Mono.just(""));
 
         return DataBufferUtils.join(file.content())
                 .map(dataBuffer -> dataBuffer.asByteBuffer().array())
-                .map(bytes -> {
-                    if (bytes.length == 0)
-                        return googleCloudService
-                                .removeCustomerPhoto(customerId, extension).then(Mono.just(""))
-                                .then(Mono.just(""));
-
-                    return googleCloudService
-                            .saveCustomerPhoto(bytes, customerId, extension);
-                })
+                .map(bytes -> googleCloudService.saveCustomerPhoto(bytes, customerId, extension))
                 .flatMap(urlPath -> urlPath);
     }
 }
