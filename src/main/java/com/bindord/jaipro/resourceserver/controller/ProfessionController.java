@@ -6,7 +6,6 @@ import com.bindord.jaipro.resourceserver.domain.profession.Profession;
 import com.bindord.jaipro.resourceserver.domain.profession.dto.ProfessionDto;
 import com.bindord.jaipro.resourceserver.domain.profession.dto.ProfessionUpdateDto;
 import com.bindord.jaipro.resourceserver.service.profession.ProfessionService;
-import com.bindord.jaipro.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +26,6 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("${service.ingress.context-path}/profession")
 public class ProfessionController {
-
-    private final Validator validator;
 
     private final ProfessionService professionService;
 

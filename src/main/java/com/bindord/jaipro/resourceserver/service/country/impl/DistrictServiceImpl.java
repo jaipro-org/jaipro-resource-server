@@ -7,7 +7,6 @@ import com.bindord.jaipro.resourceserver.domain.country.dto.DistrictDto;
 import com.bindord.jaipro.resourceserver.domain.country.dto.DistrictUpdateDto;
 import com.bindord.jaipro.resourceserver.repository.DistrictRepository;
 import com.bindord.jaipro.resourceserver.service.country.DistrictService;
-import io.r2dbc.spi.Connection;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -36,11 +35,6 @@ public class DistrictServiceImpl implements DistrictService {
     @Override
     public Mono<District> findOne(Integer id) throws NotFoundValidationException {
         return repository.findById(id);
-    }
-
-    private <T> Mono<T> close(Connection connection) {
-        return Mono.from(connection.close())
-                .then(Mono.empty());
     }
 
     @Override

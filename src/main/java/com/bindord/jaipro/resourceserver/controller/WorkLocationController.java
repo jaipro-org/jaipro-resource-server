@@ -5,7 +5,6 @@ import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
 import com.bindord.jaipro.resourceserver.domain.specialist.WorkLocation;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.WorkLocationDto;
 import com.bindord.jaipro.resourceserver.service.specialist.WorkLocationService;
-import com.bindord.jaipro.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,8 +31,6 @@ import java.util.UUID;
 @RequestMapping("${service.ingress.context-path}/work-location")
 @Validated
 public class WorkLocationController {
-
-    private final Validator validator;
 
     private final WorkLocationService workLocationService;
 

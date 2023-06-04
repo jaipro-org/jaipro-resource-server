@@ -6,7 +6,6 @@ import com.bindord.jaipro.resourceserver.domain.user.UserInfo;
 import com.bindord.jaipro.resourceserver.domain.user.dto.UserInfoDto;
 import com.bindord.jaipro.resourceserver.domain.user.dto.UserInfoUpdateDto;
 import com.bindord.jaipro.resourceserver.service.user.UserInfoService;
-import com.bindord.jaipro.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,8 +29,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("${service.ingress.context-path}/user-info")
 public class UserInfoController {
-
-    private final Validator validator;
 
     private final UserInfoService userInfoService;
 

@@ -6,7 +6,6 @@ import com.bindord.jaipro.resourceserver.domain.specialist.WorkLocation;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.WorkLocationDto;
 import com.bindord.jaipro.resourceserver.repository.WorkLocationRepository;
 import com.bindord.jaipro.resourceserver.service.specialist.WorkLocationService;
-import io.r2dbc.spi.Connection;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -38,11 +37,6 @@ public class WorkLocationServiceImpl implements WorkLocationService {
     @Override
     public Mono<WorkLocation> findOne(UUID id) throws NotFoundValidationException {
         return repository.findById(id);
-    }
-
-    private <T> Mono<T> close(Connection connection) {
-        return Mono.from(connection.close())
-                .then(Mono.empty());
     }
 
     @Override

@@ -6,7 +6,6 @@ import com.bindord.jaipro.resourceserver.domain.bank.Bank;
 import com.bindord.jaipro.resourceserver.domain.bank.dto.BankDto;
 import com.bindord.jaipro.resourceserver.domain.bank.dto.BankUpdateDto;
 import com.bindord.jaipro.resourceserver.service.bank.BankService;
-import com.bindord.jaipro.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +26,6 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("${service.ingress.context-path}/bank")
 public class BankController {
-
-    private final Validator validator;
 
     private final BankService bankService;
 

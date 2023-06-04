@@ -6,7 +6,6 @@ import com.bindord.jaipro.resourceserver.domain.country.Country;
 import com.bindord.jaipro.resourceserver.domain.country.dto.CountryDto;
 import com.bindord.jaipro.resourceserver.domain.country.dto.CountryUpdateDto;
 import com.bindord.jaipro.resourceserver.service.country.CountryService;
-import com.bindord.jaipro.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +26,6 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("${service.ingress.context-path}/country")
 public class CountryController {
-
-    private final Validator validator;
 
     private final CountryService countryService;
 

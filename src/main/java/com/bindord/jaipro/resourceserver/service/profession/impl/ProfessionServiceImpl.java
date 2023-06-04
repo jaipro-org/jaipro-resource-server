@@ -8,7 +8,6 @@ import com.bindord.jaipro.resourceserver.domain.profession.dto.ProfessionUpdateD
 import com.bindord.jaipro.resourceserver.repository.ProfessionRepository;
 import com.bindord.jaipro.resourceserver.service.profession.ProfessionService;
 import com.bindord.jaipro.resourceserver.utils.Utilitarios;
-import io.r2dbc.spi.Connection;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -35,11 +34,6 @@ public class ProfessionServiceImpl implements ProfessionService {
     @Override
     public Mono<Profession> findOne(Integer id) throws NotFoundValidationException {
         return repository.findById(id);
-    }
-
-    private <T> Mono<T> close(Connection connection) {
-        return Mono.from(connection.close())
-                .then(Mono.empty());
     }
 
     @Override

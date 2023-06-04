@@ -7,7 +7,6 @@ import com.bindord.jaipro.resourceserver.domain.bank.dto.BankDto;
 import com.bindord.jaipro.resourceserver.domain.bank.dto.BankUpdateDto;
 import com.bindord.jaipro.resourceserver.repository.BankRepository;
 import com.bindord.jaipro.resourceserver.service.bank.BankService;
-import io.r2dbc.spi.Connection;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -38,11 +37,6 @@ public class BankServiceImpl implements BankService {
         return repository.findById(id);
     }
 
-    private <T> Mono<T> close(Connection connection) {
-        return Mono.from(connection.close())
-                .then(Mono.empty());
-    }
-
     @Override
     public Mono<Void> delete(Integer id) {
         return repository.deleteById(id);
@@ -66,6 +60,7 @@ public class BankServiceImpl implements BankService {
     private Bank convertToEntityForNewCase(BankDto obj) {
         var bank = new Bank();
         BeanUtils.copyProperties(obj, bank);
+        bank.setNew(true);
         return bank;
     }
 }

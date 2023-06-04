@@ -16,7 +16,6 @@ import com.bindord.jaipro.resourceserver.service.specialist.SpecialistCvService;
 import com.bindord.jaipro.resourceserver.utils.Constants;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.r2dbc.postgresql.codec.Json;
-import io.r2dbc.spi.Connection;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.BeanUtils;
@@ -64,11 +63,6 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     @Override
     public Mono<SpecialistCv> findOne(UUID id) throws NotFoundValidationException {
         return repository.findById(id);
-    }
-
-    private <T> Mono<T> close(Connection connection) {
-        return Mono.from(connection.close())
-                .then(Mono.empty());
     }
 
     @Override

@@ -6,7 +6,6 @@ import com.bindord.jaipro.resourceserver.domain.specialist.Specialization;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecializationDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecializationUpdateDto;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecializationService;
-import com.bindord.jaipro.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +26,6 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("${service.ingress.context-path}/specialization")
 public class SpecializationController {
-
-    private final Validator validator;
 
     private final SpecializationService specializationService;
 

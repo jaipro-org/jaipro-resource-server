@@ -5,7 +5,6 @@ import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
 import com.bindord.jaipro.resourceserver.domain.specialist.SpecialistBankAccount;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistBankAccountDto;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecialistBankAccountService;
-import com.bindord.jaipro.resourceserver.validator.Validator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,8 +28,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("${service.ingress.context-path}/specialist-bank-account")
 public class SpecialistBankAccountController {
-
-    private final Validator validator;
 
     private SpecialistBankAccountService specialistBankAccountService;
 

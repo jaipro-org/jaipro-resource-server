@@ -7,7 +7,6 @@ import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistSpecial
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistSpecializationUpdateDto;
 import com.bindord.jaipro.resourceserver.repository.SpecialistSpecializationRepository;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecialistSpecializationService;
-import io.r2dbc.spi.Connection;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -40,11 +39,6 @@ public class SpecialistSpecializationServiceImpl implements SpecialistSpecializa
     @Override
     public Mono<SpecialistSpecialization> findOne(UUID id) throws NotFoundValidationException {
         return repository.findById(id);
-    }
-
-    private <T> Mono<T> close(Connection connection) {
-        return Mono.from(connection.close())
-                .then(Mono.empty());
     }
 
     @Override
