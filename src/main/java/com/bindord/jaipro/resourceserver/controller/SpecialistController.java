@@ -5,6 +5,7 @@ import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
 import com.bindord.jaipro.resourceserver.domain.specialist.Specialist;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistFiltersSearchDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistPublicInformationDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistResultSearchDTO;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistUpdateDto;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecialistService;
@@ -84,5 +85,13 @@ public class SpecialistController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public Mono<Boolean> existsSpecialistByDocument(@RequestParam String document) throws NotFoundValidationException {
         return specialistService.existsSpecialistByDocument(document);
+    }
+
+    @ApiResponse(description = "get public specialist information",
+            responseCode = "200")
+    @GetMapping(value = "/public-informtion/{id}",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public Mono<SpecialistPublicInformationDto> getPublicInformationById(@PathVariable UUID id){
+        return specialistService.getPublicInformation(id);
     }
 }
