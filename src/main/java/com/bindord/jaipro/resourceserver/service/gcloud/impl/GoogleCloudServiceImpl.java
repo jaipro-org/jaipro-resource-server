@@ -59,10 +59,11 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
 
     @Override
     public Mono<String> saveSpecialistGallery(byte[] file, UUID specialistId, String fileName) {
-
+        int index = fileName.lastIndexOf(".");
+        String extension = fileName.substring(index);
         String path = SPECIALIST_GALLERY_PATH
                 .replace("[ID]", specialistId.toString())
-                .replace("[FILENAME]", fileName);
+                .replace("[FILENAME]", UUID.randomUUID() + extension);
 
         return SaveFile(file, path);
     }
