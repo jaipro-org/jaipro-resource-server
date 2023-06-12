@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +21,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import java.util.UUID;
 
 @AllArgsConstructor
 @Slf4j
@@ -55,5 +57,13 @@ public class NotificationController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public Flux<Notification> findAll() {
         return notificationService.findAll();
+    }
+
+    @ApiResponse(description = "List notifications",
+            responseCode = "200")
+    @GetMapping(value = "/{profileType}/{userId}",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public Flux<Notification> findAllByUserId(@PathVariable Integer profileType, @PathVariable UUID userId) {
+        return notificationService.findAllByProfileAndUserId(profileType, userId);
     }
 }

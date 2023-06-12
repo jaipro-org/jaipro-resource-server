@@ -18,4 +18,18 @@ public class Constants {
     public static final String ERROR_USER_RECOVER_TICKET_EXPIRED_OR_USED = "Ticket expirado para iniciar el proceso de actualizacion de password o ya utilizado";
 
     public static final String DOMAIN_FRONTEND = "http://pure-anthem-382602.uc.r.appspot.com";
+
+    public enum Profiles {
+        CUSTOMER(1), SPECIALIST(2), BACK_OFFICE(3);
+
+        final int id;
+
+        Profiles(int id) {
+            this.id = id;
+        }
+
+        public int get() {
+            return id;
+        }
+    }
 }
