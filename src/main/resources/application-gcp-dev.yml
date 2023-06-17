@@ -23,10 +23,7 @@ spring:
   # GCP Cloud Storage
   gcp:
     storage:
-      url-autenticada: https://storage.googleapis.com/jaipro/
-      save: jaipro/specialist/{0}/photo/{1}
-      bucket: jaipro
-      project-id: pure-anthem-382602
+      url-autenticada: https://storage.googleapis.com/${cloud.gcp.storage.bucket}/
       encoded-key: ${sm://projects/${spring.cloud.gcp.secretmanager.project-id}/secrets/GCP_SA_FOR_CLOUD_STORAGE}
 
 internal:

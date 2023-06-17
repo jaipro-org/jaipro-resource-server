@@ -2,7 +2,7 @@ spring:
   profiles:
     active: gcp-dev
   codec:
-    max-in-memory-size: 5000KB
+    max-in-memory-size: 5MB
 
 eureka:
   services:

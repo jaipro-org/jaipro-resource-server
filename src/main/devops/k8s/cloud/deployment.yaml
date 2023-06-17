@@ -24,18 +24,11 @@ spec:
       serviceAccountName: jaipro-sa
       containers:
         - name: jaipro-resource-server
-          image: gcr.io/pure-anthem-382602/jaipro-resource-server
+          image: gcr.io/verdant-cascade-390018/jaipro-resource-server
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
               name: netty-port
-          resources:
-            requests:
-              cpu: 200m
-              memory: 200Mi
-            limits:
-              memory: 1024Mi
-              cpu: 500m
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
@@ -52,7 +45,7 @@ spec:
             failureThreshold: 5
           env:
             - name: PG_URL
-              value: r2dbc:postgresql://10.60.48.3:5432/jaipro_dev?schema=jaipro
+              value: r2dbc:postgresql://172.23.32.3:5432/jaipro_dev?schema=jaipro
   replicas: 1
   strategy:
     type: RollingUpdate
