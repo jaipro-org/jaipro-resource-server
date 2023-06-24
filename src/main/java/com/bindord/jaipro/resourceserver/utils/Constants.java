@@ -16,6 +16,7 @@ public class Constants {
     public static final String ERROR_BANK_ACCOUNT_REMOVED_PREFERED = "No se puede eliminar una cuenta bancaria preferida";
     public static final String ERROR_USER_RECOVER_TICKET_NOT_FOUND = "Ticket no valido para iniciar el proceso de actualizacion de password";
     public static final String ERROR_USER_RECOVER_TICKET_EXPIRED_OR_USED = "Ticket expirado para iniciar el proceso de actualizacion de password o ya utilizado";
+    public static final String ERROR_IMAGE_NOT_FOUND_IN_STORAGE = "Imagen no encontrada en el storage";
 
     public static final String DOMAIN_FRONTEND = "http://%s.uc.r.appspot.com";
 

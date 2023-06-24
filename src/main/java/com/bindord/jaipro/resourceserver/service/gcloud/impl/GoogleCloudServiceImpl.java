@@ -1,5 +1,6 @@
 package com.bindord.jaipro.resourceserver.service.gcloud.impl;
 
+import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.configuration.props.GcpProperties;
 import com.bindord.jaipro.resourceserver.service.gcloud.GoogleCloudService;
 import com.google.auth.Credentials;
@@ -19,6 +20,7 @@ import java.util.Base64;
 import java.util.UUID;
 
 import static com.bindord.jaipro.resourceserver.utils.Constants.CUSTOMER_PHOTO_PATH;
+import static com.bindord.jaipro.resourceserver.utils.Constants.ERROR_IMAGE_NOT_FOUND_IN_STORAGE;
 import static com.bindord.jaipro.resourceserver.utils.Constants.SPECIALIST_GALLERY_PATH;
 import static com.bindord.jaipro.resourceserver.utils.Constants.SPECIALIST_PHOTO_PATH;
 
@@ -77,6 +79,15 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
     }
 
     @Override
+    public Mono<Void> removeImageGallery(UUID specialistId, String photoName) {
+        String path = SPECIALIST_GALLERY_PATH
+                .replace("[ID]", specialistId.toString())
+                .replace("[FILENAME]", photoName);
+
+        return removeFile(path);
+    }
+
+    @Override
     public Mono<Void> removeSpecialistPhoto(String specialistId, String extension) {
         String path = SPECIALIST_PHOTO_PATH
                 .replace("[ID]", specialistId)
@@ -98,8 +109,13 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
     private Mono<Void> removeFile(String path) {
         BlobId blobId = BlobId.of(gcpProperties.getStorageBucket(), path);
         return getStorage()
-                .map(x -> x.delete(blobId))
-                .then(Mono.empty());
+                .map(storage -> storage.delete(blobId))
+                .flatMap(deleted -> {
+                    if (deleted) {
+                        return Mono.empty();
+                    }
+                    return Mono.error(new CustomValidationException(ERROR_IMAGE_NOT_FOUND_IN_STORAGE));
+                });
     }
 
     private Mono<Storage> getStorage() {

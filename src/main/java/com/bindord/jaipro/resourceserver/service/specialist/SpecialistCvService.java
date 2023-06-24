@@ -26,4 +26,6 @@ public interface SpecialistCvService extends BaseService<SpecialistCv, UUID, Spe
     Mono<SpecialistCv> updateGallery(List<FilePart> images, SpecialistGalleryUpdateDto entity);
 
     Mono<Void> deleteExperienceByIdAndProfessionId(UUID id, Integer professionId) throws NotFoundValidationException;
+
+    Mono<Void> removeFromGallery(UUID specialistId, String imageName);
 }
