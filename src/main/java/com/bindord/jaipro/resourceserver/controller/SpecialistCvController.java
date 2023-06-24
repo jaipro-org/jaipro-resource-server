@@ -131,7 +131,7 @@ public class SpecialistCvController {
         return specialistCvService.updateGallery(images, specialistGallery);
     }
 
-    @ApiResponse(description = "Delete image from gallery to specialist cv",
+    @ApiResponse(description = "Delete image from gallery of specialist cv",
             responseCode = "200")
     @DeleteMapping(value = "/gallery/{specialistId}/{imageName}",
             produces = {MediaType.APPLICATION_JSON_VALUE})
