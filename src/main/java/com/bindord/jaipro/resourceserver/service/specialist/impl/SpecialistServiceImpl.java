@@ -2,6 +2,9 @@ package com.bindord.jaipro.resourceserver.service.specialist.impl;
 
 import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
+import com.bindord.jaipro.resourceserver.domain.base.BasePaginateResponse;
+import com.bindord.jaipro.resourceserver.domain.json.Photo;
+import com.bindord.jaipro.resourceserver.domain.json.Rating;
 import com.bindord.jaipro.resourceserver.domain.specialist.Specialist;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistFiltersSearchDto;
@@ -10,14 +13,20 @@ import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistUpdateD
 import com.bindord.jaipro.resourceserver.repository.SpecialistRepository;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecialistService;
 import com.bindord.jaipro.resourceserver.utils.Utilitarios;
+import com.fasterxml.jackson.core.type.TypeReference;
+import io.r2dbc.postgresql.codec.Json;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static com.bindord.jaipro.resourceserver.utils.Utilitarios.instanceObjectMapper;
 
 @AllArgsConstructor
 @Service
@@ -54,12 +63,26 @@ public class SpecialistServiceImpl implements SpecialistService {
     }
 
     @Override
-    public Flux<SpecialistResultSearchDTO> searchSpecialist(SpecialistFiltersSearchDto filters) {
+    public Mono<BasePaginateResponse<SpecialistResultSearchDTO>> searchSpecialist(SpecialistFiltersSearchDto filters) {
         String paramIdCategories = generateStrPostgreArrayByList(filters.getCategories());
         String paramSpecializations = generateStrPostgreArrayByList(filters.getSpecialties());
         String paramUbigeums = generateStrPostgreArrayByList(filters.getDistricts());
 
-        return repository.searchSpecialist(paramIdCategories, paramSpecializations, paramUbigeums, filters.getPageNumber(), filters.getPageSize());
+        var data = repository.searchSpecialist(paramIdCategories, paramSpecializations, paramUbigeums, filters.getPageNumber(), filters.getPageSize());
+        var totalRows = repository.getTotalRowsInSearchSpecialist(paramIdCategories, paramSpecializations, paramUbigeums);
+        return Mono.zip(data.collectList(), totalRows)
+                    .flatMap(tuple -> {
+                        return Mono.just(new BasePaginateResponse<SpecialistResultSearchDTO>(tuple.getT2(), tuple.getT1()));
+                    });
+    }
+
+    public Flux<Rating> getRatings(UUID id){
+        return repository
+                    .findById(id)
+                    .flatMap(x -> {
+                        var list = convertJsonToClassRating(x.getRatings());
+                        return Mono.just(list);
+                    }).flatMapMany(Flux::fromIterable);
     }
 
     @Override
@@ -98,5 +121,14 @@ public class SpecialistServiceImpl implements SpecialistService {
     private String generateStrPostgreArrayByList(List<Integer> list){
         String p_list = (list == null || list.isEmpty()) ? "" : "{" + String.join(",", list.stream().map(String::valueOf).toArray(String[]::new)) + "}";
         return p_list;
+    }
+
+    @SneakyThrows
+    private List<Rating> convertJsonToClassRating(Json json) {
+        if(json == null)
+            return new ArrayList<Rating>();
+
+        var objectMapper = instanceObjectMapper();
+        return objectMapper.readValue(json.asString(), new TypeReference<>() {});
     }
 }
