@@ -182,6 +182,25 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
         });
     }
 
+    @Override
+    public Mono<Void> removeFromGallery(UUID specialistId, String imageName) {
+        return googleCloudService
+                .removeImageGallery(specialistId, imageName)
+                .then(
+                        repository.findById(specialistId)
+                                .flatMap(spe -> {
+                                    List<Photo> gallery = spe.getGallery() == null
+                                            ? Collections.emptyList() : convertJsonToClassPhoto(spe.getGallery());
+                                    List<Photo> filterGallery = gallery.stream()
+                                            .filter(photo ->
+                                                    !photo.getUrl().contains(imageName))
+                                            .collect(Collectors.toList());
+                                    spe.setGallery(Json.of(serializeObject(filterGallery)));
+                                    return repository.save(spe);
+                                }).then()
+                );
+    }
+
     private Mono<SpecialistCv> saveSpecialistGallery(List<Photo> gallery, SpecialistCv qSvc) {
         qSvc.setGallery(Json.of(serializeObject(gallery)));
         return repository.save(qSvc);

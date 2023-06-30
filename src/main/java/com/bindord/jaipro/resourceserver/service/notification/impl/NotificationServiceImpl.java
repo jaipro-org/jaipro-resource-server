@@ -7,6 +7,7 @@ import com.bindord.jaipro.resourceserver.domain.notification.dto.NotificationDto
 import com.bindord.jaipro.resourceserver.domain.notification.dto.NotificationUpdateDto;
 import com.bindord.jaipro.resourceserver.repository.NotificationRepository;
 import com.bindord.jaipro.resourceserver.service.notification.NotificationService;
+import com.bindord.jaipro.resourceserver.utils.Constants;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -52,6 +53,17 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public Flux<Notification> findAll() {
         return repository.findAll();
+    }
+
+    @Override
+    public Flux<Notification> findAllByProfileAndUserId(Integer profileType, UUID userId) {
+        if (Constants.Profiles.CUSTOMER.get() == profileType) {
+            return repository.findAllByCustomerIdAndToCustomer(userId, true);
+        }
+        if (Constants.Profiles.SPECIALIST.get() == profileType) {
+            return repository.findAllBySpecialistIdAndToSpecialist(userId, true);
+        }
+        return Flux.empty();
     }
 
     private Notification convertToEntity(NotificationUpdateDto obj, Notification notification) {

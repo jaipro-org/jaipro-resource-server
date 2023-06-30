@@ -18,10 +18,7 @@ spring:
   # GCP Cloud Storage
   gcp:
     storage:
-      url-autenticada: https://storage.googleapis.com/jaipro/
-      save: jaipro/specialist/{0}/photo/{1}
-      bucket: jaipro
-      project-id: pure-anthem-382602
+      url-autenticada: https://storage.googleapis.com/${cloud.gcp.storage.bucket}/
       encoded-key: eyJjbGllbnRfaWQiOiAiMzI1NTU5NDA1NTkuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJjbGllbnRfc2VjcmV0IjoiWm1zc0xOakp5Mjk5OGhENENUZzJlanIyIiwicXVvdGFfcHJvamVjdF9pZCI6ICJwdXJlLWFudGhlbS0zODI2MDIiLCJyZWZyZXNoX3Rva2VuIjogIjEvLzBodGFKazlrYjVZc2pDZ1lJQVJBQUdCRVNOd0YtTDlJcmZ5NnAzR0dhdTNwYjl5Ujd6RW0zN3JpRm9TUEFEcjBPMHBxUjVtMlU5Z3dzamNtWUFBZkdQdDR5ZjVleWZPWnRLWHMiLCAgInR5cGUiOiAiYXV0aG9yaXplZF91c2VyIn0=
 
 internal:

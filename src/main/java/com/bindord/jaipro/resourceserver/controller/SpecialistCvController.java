@@ -131,6 +131,14 @@ public class SpecialistCvController {
         return specialistCvService.updateGallery(images, specialistGallery);
     }
 
+    @ApiResponse(description = "Delete image from gallery of specialist cv",
+            responseCode = "200")
+    @DeleteMapping(value = "/gallery/{specialistId}/{imageName}",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public Mono<Void> deleteImageFromGallery(@PathVariable UUID specialistId, @PathVariable String imageName) {
+        return specialistCvService.removeFromGallery(specialistId, imageName);
+    }
+
     private Mono<String> uploadFile(UUID specialistId, SpecialistCvPresentationUpdateDto specialist) {
         try {
             if (!specialist.isFlagUpdatePhoto())

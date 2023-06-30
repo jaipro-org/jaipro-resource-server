@@ -2,6 +2,7 @@ package com.bindord.jaipro.resourceserver.service.mail.impl;
 
 import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
+import com.bindord.jaipro.resourceserver.configuration.props.GcpProperties;
 import com.bindord.jaipro.resourceserver.domain.mail.Mail;
 import com.bindord.jaipro.resourceserver.domain.mail.dto.MailDto;
 import com.bindord.jaipro.resourceserver.domain.mail.dto.MailUpdateDto;
@@ -35,6 +36,7 @@ public class MailServiceImpl implements MailService {
 
     private final MailRepository repository;
     private final KeycloakAuthClientConfiguration keycloakAuthClientConfiguration;
+    private final GcpProperties gcpProperties;
 
     @Override
     public Mono<Mail> save(MailDto entity) throws NotFoundValidationException, CustomValidationException {
@@ -99,7 +101,8 @@ public class MailServiceImpl implements MailService {
         return this.findOne(INIT_CAMBIO_PASSWORD.get())
                 .flatMap(mail -> {
                     String body = mail.getBody();
-                    body = body.replace("__DOMINIO__", DOMAIN_FRONTEND)
+                    body = body.replace("__DOMINIO__", String.format(
+                                    DOMAIN_FRONTEND, gcpProperties.getProjectId()))
                             .replace("__BASE64__", convertJSONtoBase64(convertJSONtoString(recoverPassword)));
                     mail.setBody(body);
 
