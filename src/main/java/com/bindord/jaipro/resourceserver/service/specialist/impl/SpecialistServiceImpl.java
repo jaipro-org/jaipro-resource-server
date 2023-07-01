@@ -115,6 +115,7 @@ public class SpecialistServiceImpl implements SpecialistService {
         var specialist = new Specialist();
         BeanUtils.copyProperties(obj, specialist);
         specialist.setNew(true);
+        specialist.setVerified(false);
         return specialist;
     }
 

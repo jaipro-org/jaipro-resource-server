@@ -46,7 +46,6 @@ public class CustomerDto {
     @Schema(example = "44448888")
     private String document;
 
-    @NotBlank
     @Size(min = 9, max = 15)
     @Schema(example = "999888777")
     private String phone;
@@ -54,7 +53,6 @@ public class CustomerDto {
     @Valid
     private Photo profilePhoto;
 
-    @NotBlank
     @Size(min = 7, max = Byte.MAX_VALUE)
     private String publicUrl;
 

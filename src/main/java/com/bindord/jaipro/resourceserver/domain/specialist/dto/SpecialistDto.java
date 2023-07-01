@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.UUID;
 
@@ -51,14 +52,5 @@ public class SpecialistDto {
 
     @Size(min = 9, max = 15)
     private String secondaryPhone;
-
-    @NotBlank
-    @Size(min = 7, max = Byte.MAX_VALUE)
-    private String publicUrl;
-
-    private boolean verified;
-
-    @Schema(example = "1")
-    private Integer districtId;
 
 }
