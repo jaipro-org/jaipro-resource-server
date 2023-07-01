@@ -64,7 +64,6 @@ public class Customer extends BaseDomain implements Persistable<UUID> {
     @Column
     private String document;
 
-    @NotBlank
     @Size(min = 9, max = 15)
     @Column
     private String phone;
@@ -73,7 +72,6 @@ public class Customer extends BaseDomain implements Persistable<UUID> {
     @Column
     private Json profilePhoto;
 
-    @NotBlank
     @Size(min = 7, max = Byte.MAX_VALUE)
     @Column
     private String publicUrl;
