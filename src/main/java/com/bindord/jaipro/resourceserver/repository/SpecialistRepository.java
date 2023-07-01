@@ -17,4 +17,7 @@ public interface SpecialistRepository extends ReactiveCrudRepository<Specialist,
 
     @Query(value = "SELECT * from jaipro.search_specialists(:#{[0]}, :#{[1]}, :#{[2]}, :#{[3]}, :#{[4]})")
     Flux<SpecialistResultSearchDTO> searchSpecialist(String idCategories, String idSpecializations, String idUbigeums, int pageNumber, int pageSize);
+
+    @Query(value = "SELECT * from jaipro.get_total_rows_by_search_specialists(:#{[0]}, :#{[1]}, :#{[2]})")
+    Mono<Integer> getTotalRowsInSearchSpecialist(String idCategories, String idSpecializations, String idUbigeums);
 }
