@@ -5,6 +5,7 @@ import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
 import com.bindord.jaipro.resourceserver.domain.json.Photo;
 import com.bindord.jaipro.resourceserver.domain.specialist.SpecialistCv;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvExperienceDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvPresentationUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistExperienceUpdateDto;
@@ -199,6 +200,53 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
                                     return repository.save(spe);
                                 }).then()
                 );
+    }
+
+    @Override
+    public Flux<SpecialistCvExperienceDto> getExeperiences(UUID specialistId) {
+        var qSpecialistCv = repository.findById(specialistId);
+
+        return qSpecialistCv
+                .flatMapMany(qSCv -> {
+                    if(qSCv.getExperienceTimes() == null)
+                        return Flux.empty();
+
+                    List<Experience> experiences = convertJsonToListExperience(qSCv.getExperienceTimes());
+                    if(experiences.isEmpty())
+                        return Flux.empty();
+
+                    return repository
+                            .getSpecializationsBySpecialistId(specialistId)
+                            .flatMap(qSpecialization -> {
+                                Experience experience = experiences.stream()
+                                        .filter(exp -> exp.getProfessionId() == qSpecialization.getProfessionId())
+                                        .findFirst()
+                                        .orElse(null);
+
+                                var specialistCvExperience = new SpecialistCvExperienceDto();
+                                specialistCvExperience.setProfession(experience.getProfessionName());
+                                specialistCvExperience.setTime(experience.getTime());
+                                specialistCvExperience.setSpecialties(qSpecialization.getSpecializations());
+
+                                return Flux.just(specialistCvExperience);
+                            });
+                });
+    }
+
+    @Override
+    public Flux<Photo> getAllGallery(UUID specialistId) {
+        Mono<SpecialistCv> qSpecialistCv = repository.findById(specialistId);
+        return qSpecialistCv
+                .flatMapMany(qScv -> {
+                    if(qScv.getGallery() == null)
+                        return Flux.empty();
+
+                    List<Photo> gallery = convertJsonToClassPhoto(qScv.getGallery());
+                    if(gallery.isEmpty())
+                        return Flux.empty();
+
+                    return Flux.fromIterable(gallery);
+                });
     }
 
     private Mono<SpecialistCv> saveSpecialistGallery(List<Photo> gallery, SpecialistCv qSvc) {

@@ -2,8 +2,10 @@ package com.bindord.jaipro.resourceserver.controller;
 
 import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
+import com.bindord.jaipro.resourceserver.domain.json.Photo;
 import com.bindord.jaipro.resourceserver.domain.specialist.SpecialistCv;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvExperienceDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvPresentationUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistExperienceUpdateDto;
@@ -137,6 +139,19 @@ public class SpecialistCvController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public Mono<Void> deleteImageFromGallery(@PathVariable UUID specialistId, @PathVariable String imageName) {
         return specialistCvService.removeFromGallery(specialistId, imageName);
+    }
+
+    @ApiResponse(description = "Get all images from gallery of specialist cv",
+            responseCode = "200")
+    @GetMapping(value = "/gallery/{specialistId}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public Flux<Photo> getGallery(@PathVariable UUID specialistId) {
+        return specialistCvService.getAllGallery(specialistId);
+    }
+
+    @ApiResponse(description = "get all experiences specialist cv", responseCode = "200")
+    @GetMapping(value = "/experience/{specialistId}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public Flux<SpecialistCvExperienceDto> getExperiences(@PathVariable UUID specialistId){
+        return specialistCvService.getExeperiences(specialistId);
     }
 
     private Mono<String> uploadFile(UUID specialistId, SpecialistCvPresentationUpdateDto specialist) {
