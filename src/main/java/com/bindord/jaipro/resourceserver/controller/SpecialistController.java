@@ -2,6 +2,8 @@ package com.bindord.jaipro.resourceserver.controller;
 
 import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
+import com.bindord.jaipro.resourceserver.domain.base.BasePaginateResponse;
+import com.bindord.jaipro.resourceserver.domain.json.Rating;
 import com.bindord.jaipro.resourceserver.domain.specialist.Specialist;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistFiltersSearchDto;
@@ -75,7 +77,7 @@ public class SpecialistController {
             responseCode = "200")
     @GetMapping(value = "/search",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Flux<SpecialistResultSearchDTO> search(@Valid SpecialistFiltersSearchDto specialistFiltersSearchDto) throws NotFoundValidationException {
+    public Mono<BasePaginateResponse<SpecialistResultSearchDTO>> search(@Valid SpecialistFiltersSearchDto specialistFiltersSearchDto) throws NotFoundValidationException {
         return specialistService.searchSpecialist(specialistFiltersSearchDto);
     }
 
@@ -91,7 +93,15 @@ public class SpecialistController {
             responseCode = "200")
     @GetMapping(value = "/public-informtion/{id}",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Mono<SpecialistPublicInformationDto> getPublicInformationById(@PathVariable UUID id){
+    public Mono<SpecialistPublicInformationDto> getPublicInformationById(@PathVariable UUID id) {
         return specialistService.getPublicInformation(id);
+    }
+
+    @ApiResponse(description = "get ratings by specialist id",
+            responseCode = "200")
+    @GetMapping(value = "/{id}/ratings",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public Flux<Rating> getRatings(@PathVariable UUID id) throws NotFoundValidationException {
+        return specialistService.getRatings(id);
     }
 }

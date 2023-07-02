@@ -21,4 +21,7 @@ public interface SpecialistRepository extends ReactiveCrudRepository<Specialist,
 
     @Query(value = "SELECT * from jaipro.get_specialist_public_information(:#{[0]})")
     Mono<SpecialistPublicInformationDto> getPublicInformationById(UUID specialistId);
+
+    @Query(value = "SELECT * from jaipro.get_total_rows_by_search_specialists(:#{[0]}, :#{[1]}, :#{[2]})")
+    Mono<Integer> getTotalRowsInSearchSpecialist(String idCategories, String idSpecializations, String idUbigeums);
 }

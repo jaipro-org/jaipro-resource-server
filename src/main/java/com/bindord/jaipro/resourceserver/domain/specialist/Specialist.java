@@ -75,7 +75,7 @@ public class Specialist extends BaseDomain implements Persistable<UUID> {
     @Column
     private String secondaryPhone;
 
-    @NotBlank
+    @NotEmpty
     @Size(min = 7, max = Byte.MAX_VALUE)
     @Column
     private String publicUrl;

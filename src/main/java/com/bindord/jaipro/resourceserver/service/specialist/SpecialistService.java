@@ -1,5 +1,7 @@
 package com.bindord.jaipro.resourceserver.service.specialist;
 
+import com.bindord.jaipro.resourceserver.domain.base.BasePaginateResponse;
+import com.bindord.jaipro.resourceserver.domain.json.Rating;
 import com.bindord.jaipro.resourceserver.domain.specialist.Specialist;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistFiltersSearchDto;
@@ -20,7 +22,9 @@ public interface SpecialistService extends BaseService<Specialist, UUID, Special
 
     Mono<Specialist> updatePresentation(UUID id, SpecialistUpdateDto specialistUpdateDto);
 
-    Flux<SpecialistResultSearchDTO> searchSpecialist(SpecialistFiltersSearchDto filters);
-
     Mono<SpecialistPublicInformationDto> getPublicInformation(UUID id);
+
+    Mono<BasePaginateResponse<SpecialistResultSearchDTO>> searchSpecialist(SpecialistFiltersSearchDto filters);
+
+    Flux<Rating> getRatings(UUID id);
 }
