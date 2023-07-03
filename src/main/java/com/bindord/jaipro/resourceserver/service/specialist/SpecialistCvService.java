@@ -29,8 +29,10 @@ public interface SpecialistCvService extends BaseService<SpecialistCv, UUID, Spe
 
     Mono<Void> deleteExperienceByIdAndProfessionId(UUID id, Integer professionId) throws NotFoundValidationException;
 
+    Mono<String> getAbout(UUID specialistId);
+
     Mono<Void> removeFromGallery(UUID specialistId, String imageName);
-    Flux<SpecialistCvExperienceDto> getExeperiences(UUID specialistId);
+    Flux<SpecialistCvExperienceDto> getExperiences(UUID specialistId);
 
     Flux<Photo> getAllGallery(UUID specialistId);
 }

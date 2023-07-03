@@ -151,7 +151,13 @@ public class SpecialistCvController {
     @ApiResponse(description = "get all experiences specialist cv", responseCode = "200")
     @GetMapping(value = "/experience/{specialistId}", produces = {MediaType.APPLICATION_JSON_VALUE})
     public Flux<SpecialistCvExperienceDto> getExperiences(@PathVariable UUID specialistId){
-        return specialistCvService.getExeperiences(specialistId);
+        return specialistCvService.getExperiences(specialistId);
+    }
+
+    @ApiResponse(description = "get about of specialist cv", responseCode = "200")
+    @GetMapping(value = "/about/{specialistId}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public Mono<String> getAbout(@PathVariable UUID specialistId){
+        return specialistCvService.getAbout(specialistId);
     }
 
     private Mono<String> uploadFile(UUID specialistId, SpecialistCvPresentationUpdateDto specialist) {

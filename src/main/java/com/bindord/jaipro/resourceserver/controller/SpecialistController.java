@@ -91,7 +91,7 @@ public class SpecialistController {
 
     @ApiResponse(description = "get public specialist information",
             responseCode = "200")
-    @GetMapping(value = "/public-informtion/{id}",
+    @GetMapping(value = "/public-information/{id}",
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public Mono<SpecialistPublicInformationDto> getPublicInformationById(@PathVariable UUID id) {
         return specialistService.getPublicInformation(id);
@@ -99,7 +99,7 @@ public class SpecialistController {
 
     @ApiResponse(description = "get ratings by specialist id",
             responseCode = "200")
-    @GetMapping(value = "/{id}/ratings",
+    @GetMapping(value = "/ratings/{id}",
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public Flux<Rating> getRatings(@PathVariable UUID id) throws NotFoundValidationException {
         return specialistService.getRatings(id);

@@ -131,6 +131,11 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
                         .then());
     }
 
+    @Override
+    public Mono<String> getAbout(UUID specialistId) {
+        return repository.findById(specialistId).flatMap(x -> Mono.just(x.getAbout()));
+    }
+
     @SneakyThrows
     private Mono<SpecialistCv> extracted(Integer professionId, SpecialistCv entity) {
         var experiences = convertJsonToListExperience(entity.getExperienceTimes());
@@ -203,7 +208,7 @@ public class SpecialistCvServiceImpl implements SpecialistCvService {
     }
 
     @Override
-    public Flux<SpecialistCvExperienceDto> getExeperiences(UUID specialistId) {
+    public Flux<SpecialistCvExperienceDto> getExperiences(UUID specialistId) {
         var qSpecialistCv = repository.findById(specialistId);
 
         return qSpecialistCv
