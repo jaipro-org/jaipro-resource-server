@@ -5,6 +5,7 @@ import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
 import com.bindord.jaipro.resourceserver.domain.json.Photo;
 import com.bindord.jaipro.resourceserver.domain.service.ServiceRequest;
 import com.bindord.jaipro.resourceserver.domain.service.dto.ServiceRequestCreateDto;
+import com.bindord.jaipro.resourceserver.domain.service.dto.ServiceRequestListDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.SpecialistCv;
 import com.bindord.jaipro.resourceserver.repository.ServiceRequestRepository;
 import com.bindord.jaipro.resourceserver.service.gcloud.GoogleCloudService;
@@ -94,6 +95,11 @@ public class ServiceRequestServiceImpl implements ServiceRequestService {
                         });
                 })
                 .then(Mono.empty());
+    }
+
+    @Override
+    public Flux<ServiceRequestListDto> list(UUID customerId) {
+        return repository.getListServiceRequestByCustomerId(customerId);
     }
 
     private Mono<Void> saveServiceRequestGallery(List<Photo> gallery, ServiceRequest qEntity) {
