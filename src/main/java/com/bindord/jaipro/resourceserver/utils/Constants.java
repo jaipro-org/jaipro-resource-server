@@ -8,8 +8,10 @@ public class Constants {
     public static final String CUSTOMER_PHOTO_PATH = "customers/[FILENAME].[EXTENSION]";
     public static final String SPECIALIST_PHOTO_PATH = "specialist/[ID]/[FILENAME].[EXTENSION]";
     public static final String SPECIALIST_GALLERY_PATH = "jaipro/specialist/[ID]/gallery/[FILENAME]";
-    
+    public static final String CUSTOMER_SERVICE_REQUEST_GALLERY_PATH = "customers/[CUSTOMER_ID]/request/[REQUEST_ID]/[FILENAME]";
+
     public static final Integer MAX_GALLERY_FILES = 6;
+    public static final Integer MAX_SERVICE_REQUEST_GALLERY_FILES = 5;
 
     //Errors message
     public static final String ERROR_EXPERIENCE_REPEATED = "Profesion ya registrada como experiencia";

@@ -20,6 +20,7 @@ import java.util.Base64;
 import java.util.UUID;
 
 import static com.bindord.jaipro.resourceserver.utils.Constants.CUSTOMER_PHOTO_PATH;
+import static com.bindord.jaipro.resourceserver.utils.Constants.CUSTOMER_SERVICE_REQUEST_GALLERY_PATH;
 import static com.bindord.jaipro.resourceserver.utils.Constants.ERROR_IMAGE_NOT_FOUND_IN_STORAGE;
 import static com.bindord.jaipro.resourceserver.utils.Constants.SPECIALIST_GALLERY_PATH;
 import static com.bindord.jaipro.resourceserver.utils.Constants.SPECIALIST_PHOTO_PATH;
@@ -64,6 +65,18 @@ public class GoogleCloudServiceImpl implements GoogleCloudService {
         String extension = fileName.substring(index);
         String path = SPECIALIST_GALLERY_PATH
                 .replace("[ID]", specialistId.toString())
+                .replace("[FILENAME]", UUID.randomUUID() + extension);
+
+        return SaveFile(file, path);
+    }
+
+    @Override
+    public Mono<String> saveServiceRequestGallery(byte[] file, String fileName, UUID customerId, UUID serviceRequestId) {
+        int index = fileName.lastIndexOf(".");
+        String extension = fileName.substring(index);
+        String path = CUSTOMER_SERVICE_REQUEST_GALLERY_PATH
+                .replace("[CUSTOMER_ID]", customerId.toString())
+                .replace("[REQUEST_ID]", serviceRequestId.toString())
                 .replace("[FILENAME]", UUID.randomUUID() + extension);
 
         return SaveFile(file, path);
