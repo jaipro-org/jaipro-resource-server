@@ -97,8 +97,7 @@ public class SpecialistController {
         return specialistService.getPublicInformation(id);
     }
 
-    @ApiResponse(description = "get ratings by specialist id",
-            responseCode = "200")
+    @ApiResponse(description = "create service request by specialist id", responseCode = "200")
     @GetMapping(value = "/ratings/{id}",
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public Flux<Rating> getRatings(@PathVariable UUID id) throws NotFoundValidationException {
