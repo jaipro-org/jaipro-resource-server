@@ -3,6 +3,7 @@ package com.bindord.jaipro.resourceserver.domain.service.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Setter
@@ -11,11 +12,17 @@ public class ServiceRequestListDto {
 
     private UUID id;
 
-    private String category;
+    private String professionName;
 
     private String detail;
 
-    private String creationDate;
+    private LocalDateTime creationDate;
 
     private Integer proposalsCounter;
+
+    private Integer rating;
+
+    private boolean enabledRating;
+
+    private boolean ratingDone;
 }

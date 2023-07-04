@@ -1,5 +1,7 @@
 package com.bindord.jaipro.resourceserver.service.serviceRequest;
 
+import com.bindord.jaipro.resourceserver.domain.base.BasePaginateResponse;
+import com.bindord.jaipro.resourceserver.domain.base.BaseSearch;
 import com.bindord.jaipro.resourceserver.domain.service.ServiceRequest;
 import com.bindord.jaipro.resourceserver.domain.service.dto.ServiceRequestCreateDto;
 import com.bindord.jaipro.resourceserver.domain.service.dto.ServiceRequestListDto;
@@ -17,5 +19,5 @@ public interface ServiceRequestService extends BaseService<ServiceRequest, UUID,
 
     Mono<Void> create(ServiceRequestCreateDto serviceRequestDto, List<FilePart> images);
 
-    Flux<ServiceRequestListDto> list(UUID customerId);
+    Mono<BasePaginateResponse<ServiceRequestListDto>> list(UUID customerId, BaseSearch searchDto);
 }

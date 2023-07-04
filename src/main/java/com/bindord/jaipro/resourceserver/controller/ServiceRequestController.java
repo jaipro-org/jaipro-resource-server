@@ -1,5 +1,7 @@
 package com.bindord.jaipro.resourceserver.controller;
 
+import com.bindord.jaipro.resourceserver.domain.base.BasePaginateResponse;
+import com.bindord.jaipro.resourceserver.domain.base.BaseSearch;
 import com.bindord.jaipro.resourceserver.domain.service.dto.ServiceRequestCreateDto;
 import com.bindord.jaipro.resourceserver.domain.service.dto.ServiceRequestListDto;
 import com.bindord.jaipro.resourceserver.service.serviceRequest.ServiceRequestService;
@@ -41,7 +43,7 @@ public class ServiceRequestController {
     @ApiResponse(description = "list all service request by customer", responseCode = "200")
     @GetMapping(value = "list/{customerId}",
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Flux<ServiceRequestListDto> listAll(@PathVariable UUID customerId){
-        return service.list(customerId);
+    public Mono<BasePaginateResponse<ServiceRequestListDto>> listAll(@PathVariable UUID customerId, @Valid BaseSearch searchDto){
+        return service.list(customerId, searchDto);
     }
 }

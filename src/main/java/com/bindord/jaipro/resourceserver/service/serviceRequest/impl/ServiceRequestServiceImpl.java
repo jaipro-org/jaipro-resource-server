@@ -2,6 +2,8 @@ package com.bindord.jaipro.resourceserver.service.serviceRequest.impl;
 
 import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
+import com.bindord.jaipro.resourceserver.domain.base.BasePaginateResponse;
+import com.bindord.jaipro.resourceserver.domain.base.BaseSearch;
 import com.bindord.jaipro.resourceserver.domain.json.Photo;
 import com.bindord.jaipro.resourceserver.domain.service.ServiceRequest;
 import com.bindord.jaipro.resourceserver.domain.service.dto.ServiceRequestCreateDto;
@@ -98,8 +100,15 @@ public class ServiceRequestServiceImpl implements ServiceRequestService {
     }
 
     @Override
-    public Flux<ServiceRequestListDto> list(UUID customerId) {
-        return repository.getListServiceRequestByCustomerId(customerId);
+    public Mono<BasePaginateResponse<ServiceRequestListDto>> list(UUID customerId, BaseSearch searchDto) {
+
+        var data = repository.getListServiceRequestByCustomerId(customerId, searchDto.getPageNumber(), searchDto.getPageSize());
+        var totalRows = repository.getTotalRowsInListServiceRequestByCustomerId(customerId);
+
+        return Mono.zip(data.collectList(), totalRows)
+                .flatMap(tuple ->
+                        Mono.just(new BasePaginateResponse<ServiceRequestListDto>(tuple.getT2(), tuple.getT1()))
+                );
     }
 
     private Mono<Void> saveServiceRequestGallery(List<Photo> gallery, ServiceRequest qEntity) {
