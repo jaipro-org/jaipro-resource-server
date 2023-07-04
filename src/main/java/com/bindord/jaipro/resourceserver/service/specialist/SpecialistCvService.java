@@ -1,8 +1,10 @@
 package com.bindord.jaipro.resourceserver.service.specialist;
 
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
+import com.bindord.jaipro.resourceserver.domain.json.Photo;
 import com.bindord.jaipro.resourceserver.domain.specialist.SpecialistCv;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvExperienceDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvPresentationUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistCvUpdateDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistExperienceUpdateDto;
@@ -27,5 +29,10 @@ public interface SpecialistCvService extends BaseService<SpecialistCv, UUID, Spe
 
     Mono<Void> deleteExperienceByIdAndProfessionId(UUID id, Integer professionId) throws NotFoundValidationException;
 
+    Mono<String> getAbout(UUID specialistId);
+
     Mono<Void> removeFromGallery(UUID specialistId, String imageName);
+    Flux<SpecialistCvExperienceDto> getExperiences(UUID specialistId);
+
+    Flux<Photo> getAllGallery(UUID specialistId);
 }

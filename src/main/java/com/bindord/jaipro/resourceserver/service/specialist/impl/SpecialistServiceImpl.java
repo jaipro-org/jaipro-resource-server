@@ -8,6 +8,7 @@ import com.bindord.jaipro.resourceserver.domain.json.Rating;
 import com.bindord.jaipro.resourceserver.domain.specialist.Specialist;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistFiltersSearchDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistPublicInformationDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistResultSearchDTO;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistUpdateDto;
 import com.bindord.jaipro.resourceserver.repository.SpecialistRepository;
@@ -83,6 +84,11 @@ public class SpecialistServiceImpl implements SpecialistService {
                         var list = convertJsonToClassRating(x.getRatings());
                         return Mono.just(list);
                     }).flatMapMany(Flux::fromIterable);
+    }
+
+    @Override
+    public Mono<SpecialistPublicInformationDto> getPublicInformation(UUID id) {
+        return repository.getPublicInformationById(id);
     }
 
     @Override

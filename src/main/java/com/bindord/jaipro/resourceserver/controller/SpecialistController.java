@@ -7,6 +7,7 @@ import com.bindord.jaipro.resourceserver.domain.json.Rating;
 import com.bindord.jaipro.resourceserver.domain.specialist.Specialist;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistFiltersSearchDto;
+import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistPublicInformationDto;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistResultSearchDTO;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistUpdateDto;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecialistService;
@@ -88,9 +89,17 @@ public class SpecialistController {
         return specialistService.existsSpecialistByDocument(document);
     }
 
+    @ApiResponse(description = "get public specialist information",
+            responseCode = "200")
+    @GetMapping(value = "/public-information/{id}",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public Mono<SpecialistPublicInformationDto> getPublicInformationById(@PathVariable UUID id) {
+        return specialistService.getPublicInformation(id);
+    }
+
     @ApiResponse(description = "get ratings by specialist id",
             responseCode = "200")
-    @GetMapping(value = "/{id}/ratings",
+    @GetMapping(value = "/ratings/{id}",
             produces = {MediaType.APPLICATION_JSON_VALUE})
     public Flux<Rating> getRatings(@PathVariable UUID id) throws NotFoundValidationException {
         return specialistService.getRatings(id);
