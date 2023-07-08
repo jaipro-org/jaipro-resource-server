@@ -65,4 +65,21 @@ public class Enums {
             return id;
         }
     }
+
+    public enum Status {
+
+        OPEN(1),
+        IN_PROGRESS(2),
+        FINALIZED(3);
+
+        final int id;
+
+        Status(int id) {
+            this.id = id;
+        }
+
+        public int get() {
+            return id;
+        }
+    }
 }
