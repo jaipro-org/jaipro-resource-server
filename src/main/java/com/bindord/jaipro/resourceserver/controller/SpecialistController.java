@@ -54,6 +54,7 @@ public class SpecialistController {
             consumes = {MediaType.APPLICATION_JSON_VALUE})
     public Mono<Specialist> update(@PathVariable UUID id, @Valid @RequestBody SpecialistUpdateDto specialist)
             throws NotFoundValidationException, CustomValidationException {
+        specialist.setId(id);
         return specialistService.updatePresentation(id, specialist);
     }
 
