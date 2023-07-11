@@ -3,7 +3,6 @@ package com.bindord.jaipro.resourceserver.service.specialist.impl;
 import com.bindord.jaipro.resourceserver.advice.CustomValidationException;
 import com.bindord.jaipro.resourceserver.advice.NotFoundValidationException;
 import com.bindord.jaipro.resourceserver.domain.base.BasePaginateResponse;
-import com.bindord.jaipro.resourceserver.domain.json.Photo;
 import com.bindord.jaipro.resourceserver.domain.json.Rating;
 import com.bindord.jaipro.resourceserver.domain.specialist.Specialist;
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistDto;
@@ -13,7 +12,6 @@ import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistResultS
 import com.bindord.jaipro.resourceserver.domain.specialist.dto.SpecialistUpdateDto;
 import com.bindord.jaipro.resourceserver.repository.SpecialistRepository;
 import com.bindord.jaipro.resourceserver.service.specialist.SpecialistService;
-import com.bindord.jaipro.resourceserver.utils.Utilitarios;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.r2dbc.postgresql.codec.Json;
 import lombok.AllArgsConstructor;
@@ -113,7 +111,7 @@ public class SpecialistServiceImpl implements SpecialistService {
 
 
     private Specialist convertToEntity(SpecialistUpdateDto obj, Specialist specialist) {
-        BeanUtils.copyProperties(obj, specialist, Utilitarios.getNullPropertyNames(obj));
+        BeanUtils.copyProperties(obj, specialist);
         return specialist;
     }
 

@@ -2,6 +2,7 @@ package com.bindord.jaipro.resourceserver.domain.specialist.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -20,7 +21,6 @@ public class SpecialistSpecializationUpdateDto {
     @Valid
     private Integer professionId;
 
-    @NotNull
     @NotEmpty
     @Valid
     private List<Integer> listSpecialitiesIds;

@@ -26,11 +26,11 @@ public class SpecialistBankAccount extends BaseDomain implements Persistable<UUI
     @Column(value = "specialist_bank_account_id")
     private UUID id;
 
+    @NotBlank
     @Size(min = 12, max = 24)
     @Column
     private String accountNumber;
 
-    @NotBlank
     @Size(min = 12, max = 30)
     @Column
     private String cci;

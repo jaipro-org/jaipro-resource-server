@@ -11,7 +11,6 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.UUID;
 
@@ -40,7 +39,6 @@ public class Notification extends BaseDomain implements Persistable<UUID> {
     @Column
     private String message;
 
-    @NotEmpty
     @Size(min = 3, max = 72)
     @Column
     private String icon;
